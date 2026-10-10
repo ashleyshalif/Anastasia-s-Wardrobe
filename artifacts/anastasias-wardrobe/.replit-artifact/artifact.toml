@@ -1,0 +1,24 @@
+kind = "web"
+previewPath = "/"
+title = "Anastasia's Wardrobe"
+description = "A responsive fashion boutique homepage recreated from the supplied Anastasia's Wardrobe design, with the original section order, styling, and imagery."
+version = "1.0.0"
+id = "artifacts/anastasias-wardrobe"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23518
+
+[services.development]
+run = "pnpm --filter @workspace/anastasias-wardrobe run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/anastasias-wardrobe", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/anastasias-wardrobe/out"
+
+[services.env]
+PORT = "23518"
+BASE_PATH = "/"
