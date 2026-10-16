@@ -1,0 +1,46 @@
+<USER_REQUEST>
+Please pause work on Phase 5 to fix several UI rendering, layout alignment, button overlap, and currency localization bugs across desktop and mobile screens:
+
+### 1. Currency & Market Localization (INR ₹ / European Style)
+- **Currency Symbol & Code**: Convert the primary store currency from British Pounds (£ / GBP) to Indian Rupees (₹ / INR) across all products, subtotal components, delivery thresholds, and order summaries[cite: 3, 4].
+- **Positioning**: Maintain an elegant European luxury aesthetic (Sabyasachi/Savanah style) while utilizing Indian Rupees (`₹` / `INR`). Update complimentary delivery thresholds accordingly (e.g., Free delivery on orders over ₹4,999).
+
+### 2. Navigation Dropdown Overlap & Layout Glitch (Desktop & Mobile)
+- **Desktop Mega Menu Overlap**: In `Header.tsx` / `CategoryView.tsx`, opening/hovering the "Women" navigation item causes mega menu text columns (`WOMEN / SHOP BY CATEGORY`, `Knitwear & cardigans`, etc.) to bleed outside their container and render over page content or clip horizontally[cite: 7, 8].
+  - **Fix**: Apply proper z-index layer (`z-50`), relative positioning, and absolute centering (`left-0 right-0 w-full max-width-7xl mx-auto`) with clean background opacity (`bg-[#FDFBF7] shadow-xl`) so menu items remain neatly aligned inside container bounds[cite: 7, 8].
+- **Mobile Menu Fit & Overflow**: On mobile screens (390px width), sub-category items under "Women" indent excessively, triggering horizontal page overflow and cutting off text on the right edge[cite: 9, 10]. Ensure `overflow-x-hidden` on `<body>` and proper padding (`px-4`) inside mobile drawers[cite: 9, 10].
+
+### 3. Action Buttons Overlap & Alignment (Order Confirmation & Bag)
+- **Merged CTAs Fix**: On the Order Confirmation page (`src/app/order-confirmed/page.tsx`), the bottom buttons ("Continue exploring" and "View saved pieces") are squished and visually overlapping with border/text collisions[cite: 5].
+  - **Fix**: Wrap CTAs in a flexible, responsive container with flex-direct
+<truncated 358 bytes>
+nd fills (`#713A48`), and legible spacing across screen sizes[cite: 5].
+
+### 4. Shopping Bag & Checkout Spacing Adjustments
+- **Shopping Bag & Checkout Layout**: Standardize container max-widths (`max-w-6xl mx-auto px-4`), resolve input label overlap on input checkboxes ("Send me occasional wardrobe letters..."), and ensure form fields maintain clean grid alignments on both desktop and mobile viewports[cite: 3, 4, 11].
+
+---
+
+### Verification Steps:
+1. Run `npm run build` to ensure 0 TypeScript or Next.js build errors.
+2. Visually verify desktop and mobile layouts in browser preview (check mega-menu alignment, button spacing, and rupee `₹` formatting).
+3. Once all visual and functional issues are resolved, proceed with Phase 5 implementation.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-10-15T00:02:42+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe\artifacts\anastasias-wardrobe\PROJECT_GUIDE.md (LANGUAGE_MARKDOWN)
+Cursor is on line: 1
+Other open documents:
+- c:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe\artifacts\anastasias-wardrobe\PROJECT_GUIDE.md (LANGUAGE_MARKDOWN)
+- c:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe\artifacts\anastasias-wardrobe\index.html (LANGUAGE_HTML)
+- c:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe\artifacts\anastasias-wardrobe\src\components\home\GiftShelf.tsx (LANGUAGE_TSX)
+- c:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe\artifacts\anastasias-wardrobe\src\components\home\AtelierStory.tsx (LANGUAGE_TSX)
+Browser State:
+  Page 9DF34E9601385CEC843A19375B8B2FAA () - http://localhost:3000/checkout [ACTIVE]
+    Viewport: 0x0, Page Height: 2588
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from Gemini 3.8 Flash (Medium) to Gemini 3.8 Flash (High). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

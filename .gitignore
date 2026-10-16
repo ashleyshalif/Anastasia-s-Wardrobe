@@ -3,10 +3,13 @@
 # compiled output
 dist
 tmp
+out
 out-tsc
 *.tsbuildinfo
 .next
 /generated-artifacts/
+scratch/
+.config/
 .expo
 .expo-shared
 
