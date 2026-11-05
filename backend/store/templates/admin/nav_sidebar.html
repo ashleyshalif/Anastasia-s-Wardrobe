@@ -1,0 +1,132 @@
+{% load i18n static %}
+<style>
+  .nav-icon { width: 18px !important; height: 18px !important; flex-shrink: 0 !important; }
+  #nav-sidebar svg { max-width: 20px !important; max-height: 20px !important; }
+</style>
+<nav id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
+  <!-- Brand Header in Sidebar (Jet & SimpleUI style) -->
+  <div class="sidebar-brand">
+    <a href="{% url 'admin:index' %}" class="sidebar-brand-link">
+      <div class="sidebar-brand-emblem">R</div>
+      <div class="sidebar-brand-text">
+        <span class="brand-title">Ryna's</span>
+        <span class="brand-sub">Atelier Admin</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="sidebar-nav-scroll">
+    <!-- Group: Overview -->
+    <div class="nav-group">
+      <div class="nav-group-title">Overview</div>
+      <ul class="nav-menu">
+        <li class="nav-item {% if request.path == '/admin/' or request.path == '/admin' %}active{% endif %}">
+          <a href="{% url 'admin:index' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="http://localhost:3000" target="_blank" class="nav-external-link">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>Live Storefront</span>
+            <span class="nav-badge-pill">3000</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Group: Catalog -->
+    <div class="nav-group">
+      <div class="nav-group-title">Catalog &amp; Inventory</div>
+      <ul class="nav-menu">
+        <li class="nav-item {% if '/store/product/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:store_product_changelist' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>Products</span>
+          </a>
+          <a href="{% url 'admin:store_product_add' %}" class="nav-quick-add" title="Add Product">+</a>
+        </li>
+        <li class="nav-item {% if '/store/category/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:store_category_changelist' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <span>Categories</span>
+          </a>
+          <a href="{% url 'admin:store_category_add' %}" class="nav-quick-add" title="Add Category">+</a>
+        </li>
+        <li class="nav-item {% if '/store/product/import/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:store_product_import' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Bulk CSV / ZIP Import</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Group: Orders -->
+    <div class="nav-group">
+      <div class="nav-group-title">Sales &amp; Fulfillment</div>
+      <ul class="nav-menu">
+        <li class="nav-item {% if '/store/order/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:store_order_changelist' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Customer Orders</span>
+          </a>
+          <a href="{% url 'admin:store_order_add' %}" class="nav-quick-add" title="Create Order">+</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Group: Client Care -->
+    <div class="nav-group">
+      <div class="nav-group-title">Client Care &amp; Concierge</div>
+      <ul class="nav-menu">
+        <li class="nav-item {% if '/store/contactmessage/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:store_contactmessage_changelist' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span>Inquiries &amp; Messages</span>
+          </a>
+        </li>
+        <li class="nav-item {% if '/store/wishlistitem/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:store_wishlistitem_changelist' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>Wishlist Records</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Group: Security -->
+    <div class="nav-group">
+      <div class="nav-group-title">Authentication &amp; Staff</div>
+      <ul class="nav-menu">
+        <li class="nav-item {% if '/auth/user/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:auth_user_changelist' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Users &amp; Staff</span>
+          </a>
+        </li>
+        <li class="nav-item {% if '/auth/group/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:auth_group_changelist' %}">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>User Groups</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sidebar Footer: Staff Info -->
+  <div class="sidebar-user-footer">
+    <div class="sidebar-user-avatar">
+      {{ request.user.username|make_list|first|upper }}
+    </div>
+    <div class="sidebar-user-meta">
+      <div class="sidebar-username">{{ request.user.username }}</div>
+      <div class="sidebar-role">Staff Administrator</div>
+    </div>
+    <a href="{% url 'admin:logout' %}" class="sidebar-logout-btn" title="Log out">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </a>
+  </div>
+</nav>

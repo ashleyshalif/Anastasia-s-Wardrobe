@@ -1,0 +1,31 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static %}
+
+{% block object-tools-items %}
+  <li>
+    <a href="{% url 'admin:store_product_import' %}" class="addlink" style="background:#713A48 !important; border-color:#582D38 !important; color:#FFFDF9 !important; font-weight:600;">
+      📥 Import Products (CSV / Excel / ZIP)
+    </a>
+  </li>
+  <li>
+    <a href="{% url 'admin:store_product_export_csv' %}" class="historylink" style="background:#FAF8F5; border:1px solid #D8CFC6; color:#302B28;">
+      📊 Export CSV
+    </a>
+  </li>
+  <li>
+    <a href="{% url 'admin:store_product_export_excel' %}" class="historylink" style="background:#FAF8F5; border:1px solid #D8CFC6; color:#302B28;">
+      📑 Export Excel
+    </a>
+  </li>
+  <li>
+    <a href="{% url 'admin:store_product_template_csv' %}" class="viewsitelink" title="Download sample CSV template" style="background:#FFFFFF !important; border:1px solid #D8CFC6 !important; color:#302B28 !important; font-weight:600 !important; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.06); padding:6px 14px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+      📄 CSV Template
+    </a>
+  </li>
+  <li>
+    <a href="{% url 'admin:store_product_template_excel' %}" class="viewsitelink" title="Download sample Excel template" style="background:#FFFFFF !important; border:1px solid #D8CFC6 !important; color:#302B28 !important; font-weight:600 !important; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.06); padding:6px 14px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+      📊 Excel Template
+    </a>
+  </li>
+  {{ block.super }}
+{% endblock %}

@@ -1,0 +1,741 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Ryna's Wardrobe Atelier{% endblock %}
+
+{% block branding %}
+<div id="site-name" style="display:flex;align-items:center;gap:20px;">
+  <!-- Official Ryna's Wardrobe Logo -->
+  <a href="{% url 'admin:index' %}" style="display:inline-flex;align-items:center;gap:14px;text-decoration:none;">
+    <img src="{% static 'images/ryna-logo.png' %}" alt="Ryna's Wardrobe" style="height:42px;width:auto;max-width:140px;object-fit:contain;display:block;" />
+    <span style="display:flex;flex-direction:column;">
+      <span style="font-family:'Lora',Georgia,serif;font-size:20px;font-weight:600;letter-spacing:0.02em;color:var(--aw-ink);line-height:1.15;">Ryna's Wardrobe</span>
+      <span style="font-family:'Inter',system-ui,sans-serif;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--aw-muted);margin-top:2px;">Atelier Administration</span>
+    </span>
+  </a>
+
+  <!-- Frontend-Style Top Navigation Menu Bar -->
+  <nav class="aw-top-menu">
+    <a href="{% url 'admin:index' %}" class="{% if request.path == '/admin/' %}active{% endif %}">Home</a>
+    <a href="{% url 'admin:store_product_changelist' %}" class="{% if '/store/product/' in request.path and '/import/' not in request.path %}active{% endif %}">Products</a>
+    <a href="{% url 'admin:store_category_changelist' %}" class="{% if '/store/category/' in request.path %}active{% endif %}">Categories</a>
+    <a href="{% url 'admin:store_order_changelist' %}" class="{% if '/store/order/' in request.path and '/returnrequest/' not in request.path %}active{% endif %}">Orders</a>
+    <a href="{% url 'admin:store_returnrequest_changelist' %}" class="{% if '/store/returnrequest/' in request.path %}active{% endif %}">Returns</a>
+    <a href="{% url 'admin:store_contactmessage_changelist' %}" class="{% if '/store/contactmessage/' in request.path %}active{% endif %}">Inquiries</a>
+    <a href="{% url 'admin:store_product_import' %}" class="{% if '/import/' in request.path %}active{% endif %}">Bulk Import</a>
+    <a href="{% url 'admin:auth_user_changelist' %}" class="{% if '/auth/' in request.path %}active{% endif %}">Staff</a>
+  </nav>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ─── Exact Frontend Design Tokens (src/config/brand.ts) ─── */
+  :root, html[data-theme="light"], body[data-theme="light"] {
+    --aw-wine:         #713A48;   /* primaryBurgundy */
+    --aw-wine-dark:    #582B37;   /* darkWine */
+    --aw-wine-light:   #8E4C5D;   /* lightBurgundy */
+    --aw-paper:        #F8F5EF;   /* canvasPaper */
+    --aw-card:         #FFFDFA;   /* cardPorcelain */
+    --aw-border:       #D8CFC6;   /* borderLinen */
+    --aw-border-soft:  #EDE7DF;
+    --aw-ink:          #302B28;   /* charcoalInk */
+    --aw-muted:        #69615B;   /* mutedTaupe */
+    --aw-gold:         #C9A765;   /* goldVermeil */
+    --aw-row-alt:      #FAF7F2;
+    --aw-row-hover:    #F4EDE6;
+    --aw-radius:       8px;
+    --aw-shadow-sm:    0 1px 3px rgba(48,43,40,0.05);
+    --aw-shadow-md:    0 4px 14px rgba(48,43,40,0.08);
+  }
+
+  /* ─── High-Contrast Dark Mode Overrides (Django data-theme="dark") ─── */
+  html[data-theme="dark"],
+  body[data-theme="dark"],
+  [data-theme="dark"] {
+    --aw-wine:         #E58FA5;   /* vibrant luminous rose for dark canvas */
+    --aw-wine-dark:    #CC7088;
+    --aw-wine-light:   #F3B3C3;
+    --aw-paper:        #131110;   /* deep rich charcoal background */
+    --aw-card:         #1E1B19;   /* elevated warm slate surface */
+    --aw-border:       #38322D;   /* visible crisp border */
+    --aw-border-soft:  #292420;   /* subtle dark slate */
+    --aw-ink:          #F7F3EE;   /* bright crisp ivory — 100% visible text! */
+    --aw-muted:        #B5ACA4;   /* high-contrast readable taupe */
+    --aw-gold:         #E5C583;
+    --aw-row-alt:      #23201D;
+    --aw-row-hover:    #2E2925;
+    --aw-shadow-sm:    0 1px 3px rgba(0,0,0,0.4);
+    --aw-shadow-md:    0 4px 14px rgba(0,0,0,0.5);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --aw-wine:         #E58FA5;
+      --aw-wine-dark:    #CC7088;
+      --aw-wine-light:   #F3B3C3;
+      --aw-paper:        #131110;
+      --aw-card:         #1E1B19;
+      --aw-border:       #38322D;
+      --aw-border-soft:  #292420;
+      --aw-ink:          #F7F3EE;
+      --aw-muted:        #B5ACA4;
+      --aw-gold:         #E5C583;
+      --aw-row-alt:      #23201D;
+      --aw-row-hover:    #2E2925;
+      --aw-shadow-sm:    0 1px 3px rgba(0,0,0,0.4);
+      --aw-shadow-md:    0 4px 14px rgba(0,0,0,0.5);
+    }
+  }
+
+  /* ─── Global Base & Full-Width Reset (No blank space below) ─ */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    background-color: var(--aw-paper) !important;
+    color: var(--aw-ink) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+  #container {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    background-color: var(--aw-paper) !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Lora', Georgia, serif !important;
+    font-weight: 600 !important;
+    color: var(--aw-ink) !important;
+  }
+
+  /* ─── Top Regional / Atelier Announcement Bar (Figma Notice) ── */
+  #header::before {
+    content: "RYNA'S WARDROBE · ATELIER MANAGEMENT CONSOLE · SYNCHRONIZED WITH STOREFRONT";
+    display: block;
+    width: 100%;
+    background-color: var(--aw-wine);
+    color: #FFFDFA;
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+  }
+
+  /* ─── Main Brand Header (Frontend Warm Paper Ivory) ─────── */
+  #header {
+    background: var(--aw-paper) !important;
+    color: var(--aw-ink) !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 42px 32px 14px !important; /* Space for the top announcement */
+    min-height: 88px !important;
+    display: flex !important;
+    align-items: center !important;
+    box-shadow: 0 1px 3px rgba(48,43,40,0.04) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+  #header a:link, #header a:visited { color: var(--aw-ink) !important; }
+  #header a:hover { color: var(--aw-wine) !important; }
+
+  /* ─── Center Navigation Menu (Frontend Style) ────────────── */
+  .aw-top-menu {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-left: 32px;
+  }
+  @media (max-width: 1100px) {
+    .aw-top-menu { display: none; }
+  }
+  .aw-top-menu a {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--aw-muted) !important;
+    text-decoration: none !important;
+    padding: 6px 2px;
+    position: relative;
+    transition: color 0.15s ease;
+  }
+  .aw-top-menu a:hover {
+    color: var(--aw-wine) !important;
+  }
+  .aw-top-menu a.active {
+    color: var(--aw-wine) !important;
+  }
+  .aw-top-menu a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 2px;
+    background: var(--aw-wine);
+    border-radius: 2px;
+  }
+
+  /* ─── Right User Tools ──────────────────────────────────── */
+  #user-tools {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    color: var(--aw-muted) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    margin-left: auto !important;
+  }
+  #user-tools strong {
+    color: var(--aw-ink) !important;
+    font-weight: 600 !important;
+  }
+  .aw-store-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    background: var(--aw-wine) !important;
+    color: #FFFDFA !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    box-shadow: 0 1px 3px rgba(113,58,72,.2) !important;
+    transition: background 0.15s ease !important;
+  }
+  .aw-store-pill:hover {
+    background: var(--aw-wine-dark) !important;
+    color: #FFFDFA !important;
+  }
+  #user-tools a.aw-logout-link {
+    color: var(--aw-muted) !important;
+    text-decoration: none !important;
+    padding: 6px 12px !important;
+    border-radius: 5px !important;
+    background: var(--aw-border-soft) !important;
+    border: 1px solid var(--aw-border) !important;
+    font-size: 13px !important;
+    transition: all 0.15s ease !important;
+  }
+  #user-tools a.aw-logout-link:hover {
+    background: #EDE7DF !important;
+    color: var(--aw-wine) !important;
+  }
+  /* ─── Django 5+ Admin Logout Form & High-Contrast Button ── */
+  #user-tools #logout-form {
+    display: inline-flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+  }
+  #user-tools #logout-form button,
+  #user-tools button[type="submit"] {
+    background: var(--aw-wine) !important;
+    color: #FFFFFF !important;
+    border: 1px solid var(--aw-wine-dark) !important;
+    border-radius: 5px !important;
+    padding: 6px 14px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    line-height: normal !important;
+    height: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+  }
+  #user-tools #logout-form button:hover,
+  #user-tools button[type="submit"]:hover {
+    background: var(--aw-wine-dark) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* ─── Inline Form Text Overlap Fix (Product Images / Form Rows) ─── */
+  .tabular td.original p,
+  .tabular tr.has_original td.original p,
+  .inline-group .tabular td.original p {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .tabular td.original {
+    padding: 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    border: none !important;
+    font-size: 0 !important;
+  }
+  .tabular td.field-image {
+    min-width: 210px !important;
+  }
+  .tabular td.field-image input[type="file"] {
+    max-width: 190px !important;
+    font-size: 12px !important;
+  }
+  .tabular td.field-image_url input {
+    min-width: 200px !important;
+  }
+
+  /* ─── Breadcrumbs Ribbon (Frontend Minimalist Ivory) ─────── */
+  div.breadcrumbs {
+    background: var(--aw-paper) !important;
+    color: var(--aw-muted) !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 11px 32px !important;
+    font-size: 13px !important;
+    font-family: 'Inter', sans-serif !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  div.breadcrumbs a {
+    color: var(--aw-wine) !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+  }
+  div.breadcrumbs a:hover { text-decoration: underline !important; }
+
+  /* ─── Content Area (100% Full-Width, No blank space below) ─ */
+  #main, .main {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 1 0 auto !important;
+  }
+  #content-start, .content {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #content {
+    padding: 20px 32px 0 32px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    float: none !important;
+    background-color: var(--aw-paper) !important;
+    flex: 1 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  #content-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    float: none !important;
+    margin: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .colMS #content-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+    margin-right: 0 !important;
+  }
+  #content-related { display: none !important; }
+  #footer { display: none !important; }
+  #nav-sidebar, #toggle-nav-sidebar, .toggle-nav-sidebar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+  .base-svgs {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  br.clear {
+    display: none !important;
+  }
+
+  #content h1 {
+    font-size: 26px !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    color: var(--aw-ink) !important;
+  }
+
+  /* ─── Django Standard Modules & Data Tables Override ─────── */
+  .module, .inline-group, .tabular, div.inline-related {
+    background: var(--aw-card) !important;
+    border: 1px solid var(--aw-border) !important;
+    border-radius: var(--aw-radius) !important;
+    box-shadow: var(--aw-shadow-sm) !important;
+    overflow: hidden !important;
+    margin-bottom: 20px !important;
+  }
+  .module h2, .module caption, .inline-group h2, div.module caption {
+    background: var(--aw-border-soft) !important;
+    color: var(--aw-wine) !important;
+    font-family: 'Lora', Georgia, serif !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    padding: 12px 20px !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    text-align: left !important;
+  }
+  .module table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  .module table th, .module table td {
+    padding: 12px 18px !important;
+    border-bottom: 1px solid var(--aw-border-soft) !important;
+    font-size: 14.5px !important;
+  }
+  .module table tr:hover { background-color: var(--aw-row-hover) !important; }
+
+  /* ─── Changelist Tables (Frontend Porcelain & Dark Slate) ── */
+  #changelist {
+    background: var(--aw-card) !important;
+    border: 1px solid var(--aw-border) !important;
+    border-radius: var(--aw-radius) !important;
+    box-shadow: var(--aw-shadow-sm) !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  #changelist table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    background: var(--aw-card) !important;
+  }
+  #changelist table thead th {
+    background: var(--aw-border-soft) !important;
+    color: var(--aw-ink) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 13px 18px !important;
+  }
+  #changelist table thead th a { color: var(--aw-ink) !important; }
+  #changelist table tbody tr:nth-child(even) { background-color: var(--aw-row-alt) !important; }
+  #changelist table tbody tr:hover { background-color: var(--aw-row-hover) !important; }
+  #changelist table tbody tr td {
+    padding: 13px 18px !important;
+    border-bottom: 1px solid var(--aw-border-soft) !important;
+    font-size: 14.5px !important;
+    color: var(--aw-ink) !important;
+    vertical-align: middle !important;
+  }
+  #changelist table tbody tr td a { color: var(--aw-ink) !important; font-weight: 500; }
+  #changelist table tbody tr td a:hover { color: var(--aw-wine) !important; }
+  #changelist table tbody tr:last-child td { border-bottom: none !important; }
+
+  /* ─── Price Input Field in Changelist (Prevent Number Truncation) ─── */
+  #changelist table th.column-price,
+  #changelist table td.field-price {
+    min-width: 120px !important;
+    width: 120px !important;
+    text-align: right !important;
+  }
+  #changelist table td.field-price input,
+  #changelist table td.field-price input[type="text"],
+  #changelist table td.field-price input[type="number"],
+  #changelist table td.field-price .vIntegerField {
+    width: 95px !important;
+    min-width: 95px !important;
+    max-width: 110px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    padding: 4px 10px !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    color: var(--aw-ink) !important;
+    background: var(--aw-card) !important;
+    border: 1.5px solid var(--aw-border) !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
+    text-align: right !important;
+    font-variant-numeric: tabular-nums !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  }
+  #changelist table td.field-price input:focus {
+    border-color: var(--aw-wine) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(113, 58, 72, 0.18) !important;
+  }
+
+  /* ─── Object Tools: High-Contrast CSV & Excel Templates ────── */
+  .object-tools a.viewsitelink {
+    background: #FFFFFF !important;
+    border: 1px solid var(--aw-border) !important;
+    color: var(--aw-ink) !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 6px 14px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease !important;
+  }
+  .object-tools a.viewsitelink:hover {
+    background: #FAF8F5 !important;
+    border-color: var(--aw-wine) !important;
+    color: var(--aw-wine) !important;
+  }
+  html[data-theme="dark"] .object-tools a.viewsitelink,
+  body[data-theme="dark"] .object-tools a.viewsitelink {
+    background: #25201D !important;
+    border-color: #4A403A !important;
+    color: #F7F3EE !important;
+  }
+  html[data-theme="dark"] .object-tools a.viewsitelink:hover,
+  body[data-theme="dark"] .object-tools a.viewsitelink:hover {
+    background: #332B27 !important;
+    border-color: var(--aw-wine) !important;
+    color: var(--aw-wine) !important;
+  }
+
+  /* ─── Actions Bar & Run Button in Changelist ─────────────── */
+  .actions {
+    background: var(--aw-border-soft) !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 10px 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    color: var(--aw-ink) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+  .actions label {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-weight: 500 !important;
+    color: var(--aw-ink) !important;
+    margin: 0 !important;
+    font-size: 13.5px !important;
+  }
+  .actions select {
+    height: 36px !important;
+    line-height: 34px !important;
+    padding: 4px 12px !important;
+    border: 1px solid var(--aw-border) !important;
+    border-radius: 6px !important;
+    background: var(--aw-card) !important;
+    color: var(--aw-ink) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+    vertical-align: middle !important;
+  }
+  .actions select:focus {
+    border-color: var(--aw-wine) !important;
+  }
+  .actions button.button,
+  .actions .button,
+  .actions button[type="submit"] {
+    height: 36px !important;
+    line-height: 36px !important;
+    padding: 0 20px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    border-radius: 6px !important;
+    background: var(--aw-wine) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
+    margin: 0 !important;
+    transition: background 0.16s ease !important;
+  }
+  .actions button.button:hover,
+  .actions .button:hover,
+  .actions button[type="submit"]:hover {
+    background: var(--aw-wine-dark) !important;
+    color: #FFFFFF !important;
+  }
+  .actions span.action-counter {
+    font-size: 13px !important;
+    color: var(--aw-muted) !important;
+    font-weight: 500 !important;
+    margin-left: 6px !important;
+  }
+
+  /* ─── Filter Sidebar in Changelist ───────────────────────── */
+  #changelist-filter {
+    background: var(--aw-card) !important;
+    border-left: 1px solid var(--aw-border) !important;
+    color: var(--aw-ink) !important;
+  }
+  #changelist-filter h2 {
+    background: var(--aw-border-soft) !important;
+    color: var(--aw-ink) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    padding: 14px 18px !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+  }
+  #changelist-filter h3 {
+    color: var(--aw-ink) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    padding: 0 16px !important;
+    margin-top: 14px !important;
+  }
+  #changelist-filter ul {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  #changelist-filter li a {
+    color: var(--aw-muted) !important;
+    font-size: 13.5px !important;
+    text-decoration: none !important;
+  }
+  #changelist-filter li a:hover {
+    color: var(--aw-wine) !important;
+    text-decoration: underline !important;
+  }
+  #changelist-filter li.selected a {
+    color: var(--aw-wine) !important;
+    font-weight: 700 !important;
+  }
+
+  /* ─── Form Inputs & Dropdowns (Dark & Light Mode) ───────── */
+  input[type="text"], input[type="password"], input[type="email"],
+  input[type="url"], input[type="number"], select, textarea {
+    background: var(--aw-card) !important;
+    color: var(--aw-ink) !important;
+    border: 1px solid var(--aw-border) !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--aw-wine) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(113,58,72,0.18) !important;
+  }
+
+  /* ─── Toolbar & Search ──────────────────────────────────── */
+  #toolbar {
+    background: var(--aw-border-soft) !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 14px 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+  #searchbar {
+    border: 1px solid var(--aw-border) !important;
+    border-radius: 6px !important;
+    padding: 10px 16px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14.5px !important;
+    background: var(--aw-card) !important;
+    color: var(--aw-ink) !important;
+    width: 340px !important;
+  }
+  #searchbar:focus {
+    border-color: var(--aw-wine) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(113,58,72,.15) !important;
+  }
+
+  /* ─── Buttons (Frontend Wine Palette) ────────────────────── */
+  .button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: var(--aw-wine) !important;
+    color: #FFFDFA !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 10px 20px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    transition: background 0.16s ease !important;
+    cursor: pointer !important;
+    box-shadow: var(--aw-shadow-sm) !important;
+  }
+  .button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+    background: var(--aw-wine-dark) !important;
+    color: #FFFDFA !important;
+    text-decoration: none !important;
+  }
+  .deletelink, a.deletelink, .submit-row a.deletelink {
+    background: #9B2335 !important;
+    color: #fff !important;
+    border-radius: 5px !important;
+    padding: 10px 18px !important;
+    font-size: 13.5px !important;
+  }
+  .deletelink:hover, a.deletelink:hover { background: #7D1C2B !important; }
+
+  /* ─── Custom Slim Scrollbar ─────────────────────────────── */
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: var(--aw-border-soft); }
+  ::-webkit-scrollbar-thumb { background: var(--aw-border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--aw-wine-light); }
+</style>
+{% endblock %}

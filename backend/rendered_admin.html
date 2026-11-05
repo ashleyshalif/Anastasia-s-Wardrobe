@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+
+<html lang="en-us" dir="ltr">
+<head>
+<title>Atelier Store Management | Anastasia's Wardrobe Atelier</title>
+<meta name="color-scheme" content="light dark" />
+<link rel="stylesheet" href="/static/admin/css/base.css" >
+
+  <link rel="stylesheet" href="/static/admin/css/dark_mode.css" >
+  <script src="/static/admin/js/theme.js" ></script>
+
+
+  <link rel="stylesheet" href="/static/admin/css/nav_sidebar.css" >
+  <script src="/static/admin/js/nav_sidebar.js" defer ></script>
+
+
+
+<style>
+  /* ─── Full-Width Canvas (Ends right at content boundary, no blank space) ── */
+  .aw-dashboard-canvas {
+    width: 100%;
+    margin: 0;
+    padding: 0 0 16px 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ─── Atelier Hero Banner (Frontend Style) ───────────────── */
+  .aw-hero-card {
+    background: var(--aw-card);
+    border: 1px solid var(--aw-border);
+    border-radius: var(--aw-radius);
+    padding: 24px 30px;
+    box-shadow: var(--aw-shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .aw-hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    background: var(--aw-wine);
+  }
+  .aw-hero-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--aw-ink);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .aw-hero-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    color: var(--aw-muted);
+  }
+  .aw-hero-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .aw-status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #E8F5E9;
+    color: #1B5E20;
+    border: 1px solid #A5D6A7;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 6px 13px;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+  }
+  .aw-status-tag::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #2E7D32;
+  }
+  .aw-btn-storefront {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--aw-wine);
+    color: #FFFDFA !important;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    box-shadow: 0 1px 3px rgba(113,58,72,.25);
+    transition: background 0.16s ease;
+  }
+  .aw-btn-storefront:hover {
+    background: var(--aw-wine-dark);
+    color: #FFFDFA !important;
+  }
+
+  /* ─── Main Balanced Grid Layout (Left 65%, Right 35%) ─────── */
+  .aw-layout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.85fr) minmax(380px, 1fr);
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 0;
+  }
+  @media (max-width: 1150px) {
+    .aw-layout-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── Left Column: Bounded Scroll Container (Matches Right Column Baseline) ─── */
+  .aw-left-scroll-column {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #D8CFC6 transparent;
+  }
+  .aw-left-scroll-column::-webkit-scrollbar {
+    width: 7px;
+  }
+  .aw-left-scroll-column::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .aw-left-scroll-column::-webkit-scrollbar-thumb {
+    background: #D8CFC6;
+    border-radius: 4px;
+  }
+  .aw-left-scroll-column::-webkit-scrollbar-thumb:hover {
+    background: var(--aw-wine);
+  }
+
+  /* ─── Shared Bottom Boundary Line Bar (Clean & Professional) ─ */
+  .aw-shared-boundary-bar {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 0;
+    padding: 14px 24px;
+    background: var(--aw-card);
+    border: 1px solid var(--aw-border);
+    border-top: 2px solid var(--aw-wine);
+    border-radius: var(--aw-radius);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: var(--aw-shadow-sm);
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+  }
+  .aw-boundary-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14.5px;
+    color: var(--aw-ink);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .aw-boundary-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    font-size: 13.5px;
+  }
+
+  /* ─── Card Typography & Section Headings ─────────────────── */
+  .aw-section-header {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--aw-ink);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .aw-section-header svg {
+    width: 20px;
+    height: 20px;
+    color: var(--aw-wine);
+  }
+
+  /* ─── Left Column: Quick Actions Grid ────────────────────── */
+  .aw-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  @media (max-width: 800px) {
+    .aw-quick-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .aw-quick-card {
+    background: var(--aw-card);
+    border: 1px solid var(--aw-border);
+    border-radius: var(--aw-radius);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: var(--aw-ink);
+    box-shadow: var(--aw-shadow-sm);
+    transition: all 0.16s ease;
+  }
+  .aw-quick-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--aw-shadow-md);
+    border-color: var(--aw-wine);
+    color: var(--aw-wine);
+    text-decoration: none;
+  }
+  .aw-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--aw-paper);
+    border: 1px solid var(--aw-border-soft);
+    color: var(--aw-wine);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    transition: all 0.16s ease;
+  }
+  .aw-quick-card:hover .aw-icon-circle {
+    background: var(--aw-wine);
+    border-color: var(--aw-wine);
+    color: #FFFDFA;
+  }
+  .aw-icon-circle svg { width: 20px; height: 20px; }
+  .aw-card-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+  .aw-card-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    color: var(--aw-muted);
+  }
+
+  /* ─── Left Column: 4 KPI Metrics Grid ────────────────────── */
+  .aw-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  @media (max-width: 900px) {
+    .aw-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .aw-kpi-box {
+    background: var(--aw-card);
+    border: 1px solid var(--aw-border);
+    border-radius: var(--aw-radius);
+    padding: 18px 20px 16px;
+    box-shadow: var(--aw-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .aw-kpi-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--aw-wine);
+  }
+  .aw-kpi-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--aw-muted);
+    margin-bottom: 5px;
+  }
+  .aw-kpi-value {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--aw-ink);
+    line-height: 1.1;
+  }
+  .aw-kpi-subtext {
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: var(--aw-muted);
+    margin-top: 4px;
+  }
+  .aw-pill-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 10px;
+    width: fit-content;
+  }
+  .badge-success { background: #E8F5E9; color: #1B6620; }
+  .badge-warning { background: #FFF3E0; color: #8A3D00; }
+  .badge-info    { background: #EDE7DF; color: #713A48; }
+
+  /* ─── Left Column: Sub-Grid (Status Bars & Recent Orders) ─── */
+  .aw-sub-columns {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 18px;
+  }
+  @media (max-width: 900px) {
+    .aw-sub-columns { grid-template-columns: 1fr; }
+  }
+
+  .aw-panel-card {
+    background: var(--aw-card);
+    border: 1px solid var(--aw-border);
+    border-radius: var(--aw-radius);
+    padding: 20px 22px;
+    box-shadow: var(--aw-shadow-sm);
+  }
+  .aw-panel-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--aw-border-soft);
+  }
+  .aw-panel-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--aw-ink);
+  }
+  .aw-panel-link {
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: var(--aw-wine);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .aw-panel-link:hover { text-decoration: underline; }
+
+  /* Status Bars */
+  .aw-bar-group { margin-bottom: 14px; }
+  .aw-bar-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--aw-ink);
+    margin-bottom: 6px;
+  }
+  .aw-bar-track {
+    height: 8px;
+    background: var(--aw-border-soft);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .aw-bar-fill { height: 100%; border-radius: 4px; }
+  .fill-confirmed { background: linear-gradient(90deg, #2E7D32, #43A047); }
+  .fill-shipped   { background: linear-gradient(90deg, #00695C, #00897B); }
+  .fill-pending   { background: linear-gradient(90deg, #D84315, #F4511E); }
+  .fill-cancelled { background: linear-gradient(90deg, #B71C1C, #C62828); }
+
+  /* Recent Orders Table */
+  .aw-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+  .aw-table th {
+    text-align: left;
+    padding: 8px 10px;
+    color: var(--aw-muted);
+    border-bottom: 1.5px solid var(--aw-border);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .aw-table td {
+    padding: 11px 10px;
+    border-bottom: 1px solid var(--aw-border-soft);
+    vertical-align: middle;
+  }
+  .aw-table tr:last-child td { border-bottom: none; }
+  .aw-table tr:hover { background: #FAF7F2; }
+
+  /* ─── Right Column: Model Directory, Scrollable Log, System ─── */
+  .aw-right-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Model Directory Panel */
+  .aw-dir-card {
+    background: var(--aw-card);
+    border: 1px solid var(--aw-border);
+    border-radius: var(--aw-radius);
+    padding: 20px 22px;
+    box-shadow: var(--aw-shadow-sm);
+  }
+  .aw-dir-group { margin-bottom: 16px; }
+  .aw-dir-group:last-child { margin-bottom: 0; }
+  .aw-dir-heading {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--aw-wine);
+    margin-bottom: 6px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--aw-border-soft);
+  }
+  .aw-dir-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 8px;
+    border-radius: 5px;
+    transition: background 0.14s ease;
+  }
+  .aw-dir-row:hover { background: var(--aw-paper); }
+  .aw-dir-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--aw-ink);
+    font-size: 14.5px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .aw-dir-left:hover { color: var(--aw-wine); text-decoration: none; }
+  .aw-dir-left svg { width: 17px; height: 17px; color: var(--aw-wine); }
+  .aw-dir-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .aw-count-tag {
+    background: var(--aw-border-soft);
+    color: var(--aw-muted);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+  .aw-add-btn {
+    color: var(--aw-wine);
+    background: rgba(113,58,72,.08);
+    border: 1px solid rgba(113,58,72,.15);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.14s ease;
+  }
+  .aw-add-btn:hover {
+    background: var(--aw-wine);
+    color: #FFFDFA;
+    text-decoration: none;
+  }
+
+  /* ─── Scrollable Right-Side Timeline ─────────────────────── */
+  .aw-timeline-card {
+    background: var(--aw-card);
+    border: 1px solid var(--aw-border);
+    border-radius: var(--aw-radius);
+    padding: 20px 22px;
+    box-shadow: var(--aw-shadow-sm);
+  }
+  .aw-timeline-scroll {
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 8px;
+    position: relative;
+    padding-left: 22px;
+    margin-top: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: #D8CFC6 transparent;
+  }
+  .aw-timeline-scroll::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 7px;
+    width: 2px;
+    background: #E4DDD5;
+  }
+  .aw-timeline-entry {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .aw-timeline-entry:last-child { margin-bottom: 0; }
+  .aw-timeline-dot {
+    position: absolute;
+    left: -22px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--aw-card);
+    border: 2px solid var(--aw-wine);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .aw-dot-core {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--aw-wine);
+  }
+  .dot-add { border-color: #2E7D32; }
+  .dot-add .aw-dot-core { background: #2E7D32; }
+  .dot-change { border-color: #1976D2; }
+  .dot-change .aw-dot-core { background: #1976D2; }
+  .dot-delete { border-color: #C62828; }
+  .dot-delete .aw-dot-core { background: #C62828; }
+
+  .aw-timeline-box {
+    background: var(--aw-paper);
+    border: 1px solid var(--aw-border-soft);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .aw-timeline-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    gap: 8px;
+  }
+  .aw-user-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--aw-ink);
+  }
+  .aw-tag-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .tag-add { background: #E8F5E9; color: #1B5E20; }
+  .tag-change { background: #E3F2FD; color: #0D47A1; }
+  .tag-delete { background: #FFEBEE; color: #B71C1C; }
+  .aw-time-text {
+    font-size: 12px;
+    color: var(--aw-muted);
+    margin-left: auto;
+  }
+  .aw-desc-text {
+    font-size: 13.5px;
+    color: var(--aw-ink);
+    line-height: 1.4;
+  }
+
+  /* Infrastructure Status Card */
+  .aw-infra-card {
+    background: var(--aw-card);
+    border: 1px solid var(--aw-border);
+    border-radius: var(--aw-radius);
+    padding: 16px 20px;
+    font-size: 13.5px;
+    color: var(--aw-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--aw-shadow-sm);
+  }
+  .aw-infra-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .aw-infra-val {
+    font-weight: 600;
+    color: var(--aw-ink);
+    font-size: 13.5px;
+  }
+</style>
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ─── Exact Frontend Design Tokens (src/config/brand.ts) ─── */
+  :root {
+    --aw-wine:         #713A48;   /* primaryBurgundy */
+    --aw-wine-dark:    #582B37;   /* darkWine */
+    --aw-wine-light:   #8E4C5D;   /* lightBurgundy */
+    --aw-paper:        #F8F5EF;   /* canvasPaper */
+    --aw-card:         #FFFDFA;   /* cardPorcelain */
+    --aw-border:       #D8CFC6;   /* borderLinen */
+    --aw-border-soft:  #EDE7DF;
+    --aw-ink:          #302B28;   /* charcoalInk */
+    --aw-muted:        #69615B;   /* mutedTaupe */
+    --aw-gold:         #C9A765;   /* goldVermeil */
+    --aw-radius:       8px;
+    --aw-shadow-sm:    0 1px 3px rgba(48,43,40,0.05);
+    --aw-shadow-md:    0 4px 14px rgba(48,43,40,0.08);
+  }
+
+  /* ─── Global Base & Full-Width Reset (No blank space below) ─ */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    background-color: var(--aw-paper) !important;
+    color: var(--aw-ink) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+  #container {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    background-color: var(--aw-paper) !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Lora', Georgia, serif !important;
+    font-weight: 600 !important;
+    color: var(--aw-ink) !important;
+  }
+
+  /* ─── Top Regional / Atelier Announcement Bar (Figma Notice) ── */
+  #header::before {
+    content: "ANASTASIA'S WARDROBE · ATELIER MANAGEMENT CONSOLE · SYNCHRONIZED WITH STOREFRONT";
+    display: block;
+    width: 100%;
+    background-color: var(--aw-wine);
+    color: #FFFDFA;
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+  }
+
+  /* ─── Main Brand Header (Frontend Warm Paper Ivory) ─────── */
+  #header {
+    background: var(--aw-paper) !important;
+    color: var(--aw-ink) !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 42px 32px 14px !important; /* Space for the top announcement */
+    min-height: 88px !important;
+    display: flex !important;
+    align-items: center !important;
+    box-shadow: 0 1px 3px rgba(48,43,40,0.04) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+  #header a:link, #header a:visited { color: var(--aw-ink) !important; }
+  #header a:hover { color: var(--aw-wine) !important; }
+
+  /* ─── Center Navigation Menu (Frontend Style) ────────────── */
+  .aw-top-menu {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-left: 32px;
+  }
+  @media (max-width: 1100px) {
+    .aw-top-menu { display: none; }
+  }
+  .aw-top-menu a {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--aw-muted) !important;
+    text-decoration: none !important;
+    padding: 6px 2px;
+    position: relative;
+    transition: color 0.15s ease;
+  }
+  .aw-top-menu a:hover {
+    color: var(--aw-wine) !important;
+  }
+  .aw-top-menu a.active {
+    color: var(--aw-wine) !important;
+  }
+  .aw-top-menu a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 2px;
+    background: var(--aw-wine);
+    border-radius: 2px;
+  }
+
+  /* ─── Right User Tools ──────────────────────────────────── */
+  #user-tools {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    color: var(--aw-muted) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    margin-left: auto !important;
+  }
+  #user-tools strong {
+    color: var(--aw-ink) !important;
+    font-weight: 600 !important;
+  }
+  .aw-store-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    background: var(--aw-wine) !important;
+    color: #FFFDFA !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    box-shadow: 0 1px 3px rgba(113,58,72,.2) !important;
+    transition: background 0.15s ease !important;
+  }
+  .aw-store-pill:hover {
+    background: var(--aw-wine-dark) !important;
+    color: #FFFDFA !important;
+  }
+  #user-tools a.aw-logout-link {
+    color: var(--aw-muted) !important;
+    text-decoration: none !important;
+    padding: 6px 12px !important;
+    border-radius: 5px !important;
+    background: var(--aw-border-soft) !important;
+    border: 1px solid var(--aw-border) !important;
+    font-size: 13px !important;
+    transition: all 0.15s ease !important;
+  }
+  #user-tools a.aw-logout-link:hover {
+    background: #EDE7DF !important;
+    color: var(--aw-wine) !important;
+  }
+
+  /* ─── Breadcrumbs Ribbon (Frontend Minimalist Ivory) ─────── */
+  div.breadcrumbs {
+    background: var(--aw-paper) !important;
+    color: var(--aw-muted) !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 11px 32px !important;
+    font-size: 13px !important;
+    font-family: 'Inter', sans-serif !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  div.breadcrumbs a {
+    color: var(--aw-wine) !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+  }
+  div.breadcrumbs a:hover { text-decoration: underline !important; }
+
+  /* ─── Content Area (100% Full-Width, No blank space below) ─ */
+  #content {
+    padding: 24px 32px 0 32px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    float: none !important;
+    background-color: var(--aw-paper) !important;
+    flex: 1 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  #content-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    float: none !important;
+    margin: 0 !important;
+    padding-bottom: 0 !important;
+    flex: 1 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .colMS #content-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+    margin-right: 0 !important;
+  }
+  #content-related { display: none !important; }
+  #footer { display: none !important; }
+
+  #content h1 {
+    font-size: 26px !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    color: var(--aw-ink) !important;
+  }
+
+  /* ─── Django Standard Modules & Data Tables Override ─────── */
+  .module, .inline-group, .tabular, div.inline-related {
+    background: var(--aw-card) !important;
+    border: 1px solid var(--aw-border) !important;
+    border-radius: var(--aw-radius) !important;
+    box-shadow: var(--aw-shadow-sm) !important;
+    overflow: hidden !important;
+    margin-bottom: 20px !important;
+  }
+  .module h2, .module caption, .inline-group h2, div.module caption {
+    background: var(--aw-border-soft) !important;
+    color: var(--aw-wine) !important;
+    font-family: 'Lora', Georgia, serif !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    padding: 12px 20px !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    text-align: left !important;
+  }
+  .module table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  .module table th, .module table td {
+    padding: 12px 18px !important;
+    border-bottom: 1px solid var(--aw-border-soft) !important;
+    font-size: 14.5px !important;
+  }
+  .module table tr:hover { background-color: #FAF5F0 !important; }
+
+  /* ─── Changelist Tables (Frontend Porcelain) ─────────────── */
+  #changelist {
+    background: var(--aw-card) !important;
+    border: 1px solid var(--aw-border) !important;
+    border-radius: var(--aw-radius) !important;
+    box-shadow: var(--aw-shadow-sm) !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  #changelist table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  #changelist table thead th {
+    background: var(--aw-border-soft) !important;
+    color: var(--aw-ink) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 13px 18px !important;
+  }
+  #changelist table thead th a { color: var(--aw-ink) !important; }
+  #changelist table tbody tr:nth-child(even) { background-color: #FAF7F2 !important; }
+  #changelist table tbody tr:hover { background-color: #F4EDE6 !important; }
+  #changelist table tbody tr td {
+    padding: 13px 18px !important;
+    border-bottom: 1px solid var(--aw-border-soft) !important;
+    font-size: 14.5px !important;
+    vertical-align: middle !important;
+  }
+  #changelist table tbody tr:last-child td { border-bottom: none !important; }
+
+  /* ─── Toolbar & Search ──────────────────────────────────── */
+  #toolbar {
+    background: var(--aw-border-soft) !important;
+    border-bottom: 1px solid var(--aw-border) !important;
+    padding: 14px 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+  #searchbar {
+    border: 1px solid var(--aw-border) !important;
+    border-radius: 6px !important;
+    padding: 10px 16px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14.5px !important;
+    background: var(--aw-card) !important;
+    color: var(--aw-ink) !important;
+    width: 340px !important;
+  }
+  #searchbar:focus {
+    border-color: var(--aw-wine) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(113,58,72,.15) !important;
+  }
+
+  /* ─── Buttons (Frontend Wine Palette) ────────────────────── */
+  .button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: var(--aw-wine) !important;
+    color: #FFFDFA !important;
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 10px 20px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    transition: background 0.16s ease !important;
+    cursor: pointer !important;
+    box-shadow: var(--aw-shadow-sm) !important;
+  }
+  .button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+    background: var(--aw-wine-dark) !important;
+    color: #FFFDFA !important;
+    text-decoration: none !important;
+  }
+  .deletelink, a.deletelink, .submit-row a.deletelink {
+    background: #9B2335 !important;
+    color: #fff !important;
+    border-radius: 5px !important;
+    padding: 10px 18px !important;
+    font-size: 13.5px !important;
+  }
+  .deletelink:hover, a.deletelink:hover { background: #7D1C2B !important; }
+
+  /* ─── Custom Slim Scrollbar ─────────────────────────────── */
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: var(--aw-border-soft); }
+  ::-webkit-scrollbar-thumb { background: var(--aw-border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--aw-wine-light); }
+</style>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/admin/css/responsive.css" >
+    
+
+<meta name="robots" content="NONE,NOARCHIVE">
+</head>
+
+<body class=""
+  data-admin-utc-offset="19800"
+  data-admin-server-timezone="Asia/Kolkata">
+<a href="#content-start" class="skip-to-content-link">Skip to main content</a>
+<!-- Container -->
+<div id="container">
+
+    
+    <!-- Header -->
+    
+      <header id="header">
+        <div id="branding">
+        
+<div id="site-name" style="display:flex;align-items:center;gap:20px;">
+  <!-- Official Anastasia's Wardrobe Vector Logo (No raster photo issues) -->
+  <a href="/admin/" style="display:inline-flex;align-items:center;gap:12px;text-decoration:none;">
+    <svg width="32" height="26" viewBox="0 0 100 70" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--aw-wine);flex-shrink:0;">
+      <path d="M50 20 C50 12 56 8 61 13 C65 17 61 22 50 26" />
+      <path d="M50 26 L15 54 C12 56 14 60 18 60 L82 60 C86 60 88 56 85 54 Z" fill="none" stroke="var(--aw-wine)" stroke-width="4.5"/>
+    </svg>
+    <span style="display:flex;flex-direction:column;">
+      <span style="font-family:'Lora',Georgia,serif;font-size:20px;font-weight:600;letter-spacing:0.02em;color:#302B28;line-height:1.15;">Anastasia's Wardrobe</span>
+      <span style="font-family:'Inter',system-ui,sans-serif;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:#69615B;margin-top:2px;">Atelier Administration</span>
+    </span>
+  </a>
+
+  <!-- Frontend-Style Top Navigation Menu Bar -->
+  <nav class="aw-top-menu">
+    <a href="/admin/store/product/" class="">Products</a>
+    <a href="/admin/store/category/" class="">Categories</a>
+    <a href="/admin/store/order/" class="">Orders</a>
+    <a href="/admin/store/contactmessage/" class="">Inquiries</a>
+    <a href="/admin/store/product/import/" class="">Bulk Import</a>
+    <a href="/admin/auth/user/" class="">Staff</a>
+  </nav>
+</div>
+
+        </div>
+        
+        
+        <div id="user-tools">
+            
+                Welcome,
+                <strong>user</strong>.
+            
+            
+                
+                    <a href="/">View site</a> /
+                
+                
+                    
+                    
+                
+                
+                <a href="/admin/password_change/">Change password</a> /
+                
+                <form id="logout-form" method="post" action="/admin/logout/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="toG9pNPpD9mpoh75dQsA0Z48SduLnl2T3VVawy5cf9bfSRGuP9YkGPArMaHJ4jyP">
+                    <button type="submit">Log out</button>
+                </form>
+                
+<button class="theme-toggle">
+  <span class="visually-hidden theme-label-when-auto">Toggle theme (current theme: auto)</span>
+  <span class="visually-hidden theme-label-when-light">Toggle theme (current theme: light)</span>
+  <span class="visually-hidden theme-label-when-dark">Toggle theme (current theme: dark)</span>
+  <svg aria-hidden="true" class="theme-icon-when-auto">
+    <use xlink:href="#icon-auto" />
+  </svg>
+  <svg aria-hidden="true" class="theme-icon-when-dark">
+    <use xlink:href="#icon-moon" />
+  </svg>
+  <svg aria-hidden="true" class="theme-icon-when-light">
+    <use xlink:href="#icon-sun" />
+  </svg>
+</button>
+
+            
+        </div>
+        
+        
+        
+      </header>
+    
+    <!-- END Header -->
+    
+      <nav aria-label="Breadcrumbs">
+        
+          <ol class="breadcrumbs">
+            <li><a href="/admin/">Home</a></li>
+            <li aria-current="page">Atelier Store Management</li>
+          </ol>
+        
+      </nav>
+    
+    
+
+    <div class="main" id="main">
+      
+        
+          
+<nav id="nav-sidebar" aria-label="Sidebar">
+  <!-- Brand Header in Sidebar (Jet & SimpleUI style) -->
+  <div class="sidebar-brand">
+    <a href="/admin/" class="sidebar-brand-link">
+      <div class="sidebar-brand-emblem">A</div>
+      <div class="sidebar-brand-text">
+        <span class="brand-title">Anastasia's</span>
+        <span class="brand-sub">Atelier Admin</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="sidebar-nav-scroll">
+    <!-- Group: Overview -->
+    <div class="nav-group">
+      <div class="nav-group-title">Overview</div>
+      <ul class="nav-menu">
+        <li class="nav-item active">
+          <a href="/admin/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="http://localhost:3000" target="_blank" class="nav-external-link">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>Live Storefront</span>
+            <span class="nav-badge-pill">3000</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Group: Catalog -->
+    <div class="nav-group">
+      <div class="nav-group-title">Catalog &amp; Inventory</div>
+      <ul class="nav-menu">
+        <li class="nav-item ">
+          <a href="/admin/store/product/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>Products</span>
+          </a>
+          <a href="/admin/store/product/add/" class="nav-quick-add" title="Add Product">+</a>
+        </li>
+        <li class="nav-item ">
+          <a href="/admin/store/category/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <span>Categories</span>
+          </a>
+          <a href="/admin/store/category/add/" class="nav-quick-add" title="Add Category">+</a>
+        </li>
+        <li class="nav-item ">
+          <a href="/admin/store/product/import/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Bulk CSV / ZIP Import</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Group: Orders -->
+    <div class="nav-group">
+      <div class="nav-group-title">Sales &amp; Fulfillment</div>
+      <ul class="nav-menu">
+        <li class="nav-item ">
+          <a href="/admin/store/order/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Customer Orders</span>
+          </a>
+          <a href="/admin/store/order/add/" class="nav-quick-add" title="Create Order">+</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Group: Client Care -->
+    <div class="nav-group">
+      <div class="nav-group-title">Client Care &amp; Concierge</div>
+      <ul class="nav-menu">
+        <li class="nav-item ">
+          <a href="/admin/store/contactmessage/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span>Inquiries &amp; Messages</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/admin/store/wishlistitem/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>Wishlist Records</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Group: Security -->
+    <div class="nav-group">
+      <div class="nav-group-title">Authentication &amp; Staff</div>
+      <ul class="nav-menu">
+        <li class="nav-item ">
+          <a href="/admin/auth/user/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Users &amp; Staff</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/admin/auth/group/">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>User Groups</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sidebar Footer: Staff Info -->
+  <div class="sidebar-user-footer">
+    <div class="sidebar-user-avatar">
+      U
+    </div>
+    <div class="sidebar-user-meta">
+      <div class="sidebar-username">user</div>
+      <div class="sidebar-role">Staff Administrator</div>
+    </div>
+    <a href="/admin/logout/" class="sidebar-logout-btn" title="Log out">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </a>
+  </div>
+</nav>
+
+        
+      
+      <main id="content-start" class="content" tabindex="-1">
+        
+          
+        
+        <!-- Content -->
+        <div id="content" class="colM">
+          <div class="titles-and-tools">
+            <div class="titles">
+              
+              <h1>Atelier Store Management</h1>
+              
+            </div>
+            
+          </div>
+          
+<div class="aw-dashboard-canvas">
+
+  
+
+  <!-- 1. Top Atelier Hero Banner -->
+  <div class="aw-hero-card">
+    <div>
+      <div class="aw-hero-title">
+        <span>Welcome to the Atelier</span>
+        <span style="color:var(--aw-wine);">✦</span>
+      </div>
+      <div class="aw-hero-sub">
+        Anastasia's Wardrobe central management &amp; live storefront synchronization.
+      </div>
+    </div>
+    <div class="aw-hero-right">
+      <span class="aw-status-tag">System Synchronized</span>
+      <a href="http://localhost:3000" target="_blank" class="aw-btn-storefront">
+        <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span>Live Storefront</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. Balanced 2-Column Grid (Left: Operations, Right: Directory & Scrollable Stream) -->
+  <div class="aw-layout-grid">
+
+    <!-- ── LEFT COLUMN (66% Width) - Scrolls when content exceeds right column ── -->
+    <div id="aw-left-scroll-column" class="aw-left-scroll-column">
+      <!-- Quick Actions (8 Cards) -->
+      <div class="aw-section-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>Quick Actions</span>
+      </div>
+      <div class="aw-quick-grid">
+        <a href="/admin/store/product/" class="aw-quick-card">
+          <div class="aw-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <div class="aw-card-title">Products</div>
+          <div class="aw-card-sub">14 Items</div>
+        </a>
+
+        <a href="/admin/store/product/add/" class="aw-quick-card">
+          <div class="aw-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+          <div class="aw-card-title">Add Product</div>
+          <div class="aw-card-sub">New Piece</div>
+        </a>
+
+        <a href="/admin/store/category/" class="aw-quick-card">
+          <div class="aw-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          </div>
+          <div class="aw-card-title">Categories</div>
+          <div class="aw-card-sub">9 Enabled</div>
+        </a>
+
+        <a href="/admin/store/order/" class="aw-quick-card">
+          <div class="aw-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <div class="aw-card-title">Orders</div>
+          <div class="aw-card-sub">0 Total</div>
+        </a>
+
+        <a href="/admin/store/contactmessage/" class="aw-quick-card">
+          <div class="aw-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="aw-card-title">Inquiries</div>
+          <div class="aw-card-sub">2 Unread</div>
+        </a>
+
+        <a href="/admin/store/product/import/" class="aw-quick-card">
+          <div class="aw-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="aw-card-title">Bulk Import</div>
+          <div class="aw-card-sub">CSV / ZIP</div>
+        </a>
+
+        <a href="/admin/auth/user/" class="aw-quick-card">
+          <div class="aw-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="aw-card-title">Staff Users</div>
+          <div class="aw-card-sub">Permissions</div>
+        </a>
+
+        <a href="http://localhost:3000" target="_blank" class="aw-quick-card">
+          <div class="aw-icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="aw-card-title">Storefront</div>
+          <div class="aw-card-sub">Port 3000</div>
+        </a>
+      </div>
+
+      <!-- 4 KPI Metrics -->
+      <div class="aw-kpi-grid">
+        <div class="aw-kpi-box">
+          <div class="aw-kpi-label">Confirmed Revenue</div>
+          <div class="aw-kpi-value">₹0</div>
+          <div class="aw-kpi-subtext">Verified orders</div>
+          <span class="aw-pill-badge badge-success">Razorpay &amp; COD</span>
+        </div>
+
+        <div class="aw-kpi-box">
+          <div class="aw-kpi-label">Customer Orders</div>
+          <div class="aw-kpi-value">0</div>
+          <div class="aw-kpi-subtext">0 paid &amp; confirmed</div>
+          
+          <span class="aw-pill-badge badge-success">All Clear</span>
+          
+        </div>
+
+        <div class="aw-kpi-box">
+          <div class="aw-kpi-label">Active Catalog</div>
+          <div class="aw-kpi-value">14</div>
+          <div class="aw-kpi-subtext">9 categories</div>
+          <span class="aw-pill-badge badge-info">100% In Stock</span>
+        </div>
+
+        <div class="aw-kpi-box">
+          <div class="aw-kpi-label">Client Inquiries</div>
+          <div class="aw-kpi-value">2</div>
+          <div class="aw-kpi-subtext">Unread messages</div>
+          
+          <span class="aw-pill-badge badge-warning">Awaiting Reply</span>
+          
+        </div>
+      </div>
+
+      <!-- Sub-Columns: Status Bars + Recent Orders -->
+      <div class="aw-sub-columns">
+        <!-- Status Bars -->
+        <div class="aw-panel-card">
+          <div class="aw-panel-top">
+            <span class="aw-panel-title">Order Status</span>
+            <span style="font-size: 11.5px; color: var(--aw-muted);">0 total</span>
+          </div>
+
+          <div class="aw-bar-group">
+            <div class="aw-bar-meta">
+              <span>Confirmed &amp; Paid</span>
+              <span>0</span>
+            </div>
+            <div class="aw-bar-track">
+              <div class="aw-bar-fill fill-confirmed" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="aw-bar-group">
+            <div class="aw-bar-meta">
+              <span>Shipped / Delivered</span>
+              <span>0</span>
+            </div>
+            <div class="aw-bar-track">
+              <div class="aw-bar-fill fill-shipped" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="aw-bar-group">
+            <div class="aw-bar-meta">
+              <span>Pending Payment</span>
+              <span>0</span>
+            </div>
+            <div class="aw-bar-track">
+              <div class="aw-bar-fill fill-pending" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="aw-bar-group">
+            <div class="aw-bar-meta">
+              <span>Cancelled / Returned</span>
+              <span>0</span>
+            </div>
+            <div class="aw-bar-track">
+              <div class="aw-bar-fill fill-cancelled" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Customer Orders Table -->
+        <div class="aw-panel-card">
+          <div class="aw-panel-top">
+            <span class="aw-panel-title">Recent Orders</span>
+            <a href="/admin/store/order/" class="aw-panel-link">View all →</a>
+          </div>
+
+          
+          <p style="font-size: 13px; color: var(--aw-muted); font-style: italic; margin-top: 10px;">No customer orders placed yet.</p>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT COLUMN (34% Width) ───────────────────────── -->
+    <div id="aw-right-column" class="aw-right-stack">
+
+      <!-- Atelier Model Directory -->
+      <div class="aw-dir-card">
+        <div class="aw-panel-top" style="padding-bottom: 8px; margin-bottom: 10px;">
+          <span class="aw-panel-title" style="display:flex;align-items:center;gap:8px;">
+            <svg style="width:16px;height:16px;color:var(--aw-wine);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>Model Directory</span>
+          </span>
+          <span style="font-size: 11px; color: var(--aw-muted);">Management</span>
+        </div>
+
+        <!-- Catalog Group -->
+        <div class="aw-dir-group">
+          <div class="aw-dir-heading">Catalog &amp; Inventory</div>
+          <div class="aw-dir-row">
+            <a href="/admin/store/product/" class="aw-dir-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span>Products</span>
+            </a>
+            <div class="aw-dir-actions">
+              <span class="aw-count-tag">14</span>
+              <a href="/admin/store/product/add/" class="aw-add-btn">+ Add</a>
+            </div>
+          </div>
+
+          <div class="aw-dir-row">
+            <a href="/admin/store/category/" class="aw-dir-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              <span>Categories</span>
+            </a>
+            <div class="aw-dir-actions">
+              <span class="aw-count-tag">9</span>
+              <a href="/admin/store/category/add/" class="aw-add-btn">+ Add</a>
+            </div>
+          </div>
+
+          <div class="aw-dir-row">
+            <a href="/admin/store/product/import/" class="aw-dir-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Bulk CSV / ZIP Import</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Sales & Customer Care -->
+        <div class="aw-dir-group">
+          <div class="aw-dir-heading">Sales &amp; Customer Care</div>
+          <div class="aw-dir-row">
+            <a href="/admin/store/order/" class="aw-dir-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <span>Customer Orders</span>
+            </a>
+            <div class="aw-dir-actions">
+              <span class="aw-count-tag">0</span>
+              <a href="/admin/store/order/add/" class="aw-add-btn">+ Add</a>
+            </div>
+          </div>
+
+          <div class="aw-dir-row">
+            <a href="/admin/store/contactmessage/" class="aw-dir-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span>Inquiries &amp; Messages</span>
+            </a>
+            <div class="aw-dir-actions">
+              
+              <span class="aw-count-tag" style="background:#FFF3E0;color:#8A3D00;">2 Unread</span>
+              
+            </div>
+          </div>
+
+          <div class="aw-dir-row">
+            <a href="/admin/store/wishlistitem/" class="aw-dir-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span>Wishlist Records</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Auth -->
+        <div class="aw-dir-group">
+          <div class="aw-dir-heading">Staff &amp; Authentication</div>
+          <div class="aw-dir-row">
+            <a href="/admin/auth/user/" class="aw-dir-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Users &amp; Staff</span>
+            </a>
+            <div class="aw-dir-actions">
+              <a href="/admin/auth/user/add/" class="aw-add-btn">+ Add</a>
+            </div>
+          </div>
+
+          <div class="aw-dir-row">
+            <a href="/admin/auth/group/" class="aw-dir-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              <span>User Groups</span>
+            </a>
+            <div class="aw-dir-actions">
+              <a href="/admin/auth/group/add/" class="aw-add-btn">+ Add</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrollable Recent Activity Log (Individually Scrolls Over) -->
+      <div class="aw-timeline-card">
+        <div class="aw-panel-top" style="padding-bottom: 8px; margin-bottom: 8px;">
+          <span class="aw-panel-title" style="display:flex;align-items:center;gap:8px;">
+            <svg style="width:16px;height:16px;color:var(--aw-wine);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Recent Activity Log</span>
+          </span>
+          <span style="font-size: 10.5px; color: var(--aw-muted);">Scrollable Feed</span>
+        </div>
+
+        
+        <div class="aw-timeline-scroll">
+          
+          <div class="aw-timeline-entry">
+            <div class="aw-timeline-dot dot-delete">
+              <div class="aw-dot-core"></div>
+            </div>
+            <div class="aw-timeline-box">
+              <div class="aw-timeline-top">
+                <span class="aw-user-name">user</span>
+                <span class="aw-tag-pill tag-delete">
+                  Deleted
+                </span>
+                <span class="aw-time-text">Oct 24, 9:01 p.m.</span>
+              </div>
+              <div class="aw-desc-text">
+                <strong>Product:</strong>
+                <span>Petal drop earrings</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="aw-timeline-entry">
+            <div class="aw-timeline-dot dot-delete">
+              <div class="aw-dot-core"></div>
+            </div>
+            <div class="aw-timeline-box">
+              <div class="aw-timeline-top">
+                <span class="aw-user-name">user</span>
+                <span class="aw-tag-pill tag-delete">
+                  Deleted
+                </span>
+                <span class="aw-time-text">Oct 21, 12:50 p.m.</span>
+              </div>
+              <div class="aw-desc-text">
+                <strong>Product:</strong>
+                <span>Vintage Silk Blouse</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="aw-timeline-entry">
+            <div class="aw-timeline-dot dot-delete">
+              <div class="aw-dot-core"></div>
+            </div>
+            <div class="aw-timeline-box">
+              <div class="aw-timeline-top">
+                <span class="aw-user-name">user</span>
+                <span class="aw-tag-pill tag-delete">
+                  Deleted
+                </span>
+                <span class="aw-time-text">Oct 21, 12:50 p.m.</span>
+              </div>
+              <div class="aw-desc-text">
+                <strong>Product:</strong>
+                <span>Keepsake velvet pouch</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="aw-timeline-entry">
+            <div class="aw-timeline-dot dot-change">
+              <div class="aw-dot-core"></div>
+            </div>
+            <div class="aw-timeline-box">
+              <div class="aw-timeline-top">
+                <span class="aw-user-name">user</span>
+                <span class="aw-tag-pill tag-change">
+                  Changed
+                </span>
+                <span class="aw-time-text">Oct 21, 12:49 p.m.</span>
+              </div>
+              <div class="aw-desc-text">
+                <strong>Order:</strong>
+                <span>AW-2026-00001 (Maya Kapoor)</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="aw-timeline-entry">
+            <div class="aw-timeline-dot dot-change">
+              <div class="aw-dot-core"></div>
+            </div>
+            <div class="aw-timeline-box">
+              <div class="aw-timeline-top">
+                <span class="aw-user-name">user</span>
+                <span class="aw-tag-pill tag-change">
+                  Changed
+                </span>
+                <span class="aw-time-text">Oct 21, 12:43 p.m.</span>
+              </div>
+              <div class="aw-desc-text">
+                <strong>Product:</strong>
+                <span>Sunday wool cardigan</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="aw-timeline-entry">
+            <div class="aw-timeline-dot dot-change">
+              <div class="aw-dot-core"></div>
+            </div>
+            <div class="aw-timeline-box">
+              <div class="aw-timeline-top">
+                <span class="aw-user-name">user</span>
+                <span class="aw-tag-pill tag-change">
+                  Changed
+                </span>
+                <span class="aw-time-text">Oct 21, 12:43 p.m.</span>
+              </div>
+              <div class="aw-desc-text">
+                <strong>Product:</strong>
+                <span>Garden cotton dress</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="aw-timeline-entry">
+            <div class="aw-timeline-dot dot-change">
+              <div class="aw-dot-core"></div>
+            </div>
+            <div class="aw-timeline-box">
+              <div class="aw-timeline-top">
+                <span class="aw-user-name">user</span>
+                <span class="aw-tag-pill tag-change">
+                  Changed
+                </span>
+                <span class="aw-time-text">Oct 21, 12:43 p.m.</span>
+              </div>
+              <div class="aw-desc-text">
+                <strong>Product:</strong>
+                <span>Amelie wrap midi dress</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="aw-timeline-entry">
+            <div class="aw-timeline-dot dot-change">
+              <div class="aw-dot-core"></div>
+            </div>
+            <div class="aw-timeline-box">
+              <div class="aw-timeline-top">
+                <span class="aw-user-name">user</span>
+                <span class="aw-tag-pill tag-change">
+                  Changed
+                </span>
+                <span class="aw-time-text">Oct 21, 12:42 p.m.</span>
+              </div>
+              <div class="aw-desc-text">
+                <strong>Product:</strong>
+                <span>Daisy cotton co-ord</span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+
+      <!-- Infrastructure Status Card -->
+      <div class="aw-infra-card">
+        <div class="aw-infra-row">
+          <span>Backend Framework</span>
+          <span class="aw-infra-val">Django 5.1 &amp; DRF</span>
+        </div>
+        <div class="aw-infra-row">
+          <span>Frontend Architecture</span>
+          <span class="aw-infra-val">Next.js 16 (App Router)</span>
+        </div>
+        <div class="aw-infra-row">
+          <span>Cache Engine</span>
+          <span class="aw-infra-val">LocMemCache (1800s TTL)</span>
+        </div>
+        <div class="aw-infra-row">
+          <span>Brute-force Throttling</span>
+          <span class="aw-infra-val" style="color:#2E7D32;">Active (5/min login)</span>
+        </div>
+        <div class="aw-infra-row">
+          <span>Payment Webhook</span>
+          <span class="aw-infra-val" style="color:#2E7D32;">HMAC-SHA256 Ready</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. Shared Boundary Bar — spans full width, anchors both columns to the exact same baseline -->
+  <div class="aw-shared-boundary-bar">
+    <div class="aw-boundary-left">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--aw-wine);flex-shrink:0;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span style="font-family:'Lora',Georgia,serif; font-size:15px; font-weight:600; color:var(--aw-ink);">Anastasia's Wardrobe</span>
+      <span style="color:var(--aw-muted); font-size:13.5px;">· Atelier Administration Console</span>
+    </div>
+    <div class="aw-boundary-right">
+      <a href="http://localhost:3000" target="_blank" style="color:var(--aw-wine); font-size:13.5px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+        <span>Storefront (localhost:3000)</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+      <span style="color:var(--aw-border); font-size:14px;">|</span>
+      <span style="color:var(--aw-muted); font-size:13px;">14 catalog pieces active</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* Synchronize left column scrollable height to match right column height */
+  (function () {
+    function syncColumnHeights() {
+      var left = document.getElementById('aw-left-scroll-column');
+      var right = document.getElementById('aw-right-column');
+      if (!left || !right) return;
+
+      if (window.innerWidth <= 1150) {
+        left.style.maxHeight = '';
+        return;
+      }
+
+      // Reset first to accurately measure natural content height
+      left.style.maxHeight = '';
+      var rightH = right.offsetHeight;
+      var leftH = left.scrollHeight;
+
+      // Cap the left column height to match the right column so both share the same bottom baseline
+      if (leftH > rightH && rightH > 200) {
+        left.style.maxHeight = rightH + 'px';
+      } else {
+        left.style.maxHeight = '';
+      }
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(syncColumnHeights, 60);
+    } else {
+      document.addEventListener('DOMContentLoaded', function () { setTimeout(syncColumnHeights, 60); });
+    }
+    window.addEventListener('resize', syncColumnHeights);
+
+    // Dynamic observer to keep columns in sync whenever right column content or cards change
+    if (window.ResizeObserver) {
+      var rightCol = document.getElementById('aw-right-column');
+      if (rightCol) {
+        new ResizeObserver(syncColumnHeights).observe(rightCol);
+      }
+    }
+  })();
+</script>
+
+          
+          <br class="clear">
+        </div>
+        <!-- END Content -->
+      </main>
+    </div>
+    <footer id="footer"></footer>
+</div>
+<!-- END Container -->
+
+<!-- SVGs -->
+<svg xmlns="http://www.w3.org/2000/svg" class="base-svgs">
+  <symbol viewBox="0 0 24 24" id="icon-auto"><path d="M0 0h24v24H0z" fill="currentColor"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2V4a8 8 0 1 0 0 16z"/></symbol>
+  <symbol viewBox="0 0 24 24" id="icon-moon"><path d="M0 0h24v24H0z" fill="currentColor"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol>
+  <symbol viewBox="0 0 24 24" id="icon-sun"><path d="M0 0h24v24H0z" fill="currentColor"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol>
+</svg>
+<!-- END SVGs -->
+
+</body>
+</html>

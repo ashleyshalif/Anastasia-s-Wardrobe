@@ -1,0 +1,191 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+  .import-card {
+    background: #FFFDFA;
+    border: 1px solid #D8CFC6;
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .import-header {
+    border-bottom: 1px solid #EAE4D9;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+  .btn-burgundy {
+    background: #713A48;
+    color: #FFFDFA;
+    padding: 9px 18px;
+    border-radius: 4px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-burgundy:hover { background: #582D38; color: #FFF; }
+  .btn-secondary {
+    background: #F4EFE6;
+    color: #302B28;
+    border: 1px solid #D8CFC6;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 8px;
+  }
+  .badge-valid { background: #E8F5E9; color: #2E7D32; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; }
+  .badge-error { background: #FFEBEE; color: #C62828; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; }
+  .table-preview { width: 100%; border-collapse: collapse; margin-top: 14px; }
+  .table-preview th { background: #F8F5EF; padding: 10px; border: 1px solid #D8CFC6; text-align: left; font-size: 12px; }
+  .table-preview td { padding: 9px 10px; border: 1px solid #EAE4D9; font-size: 12px; }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:store_product_changelist' %}">Products</a>
+  &rsaquo; Bulk Import &amp; Sync
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="import-card">
+    <div class="import-header">
+      <h2 style="margin:0 0 6px 0; font-size:22px; color:#302B28; font-family:Georgia, serif;">
+        Bulk Product &amp; Gallery Import
+      </h2>
+      <p style="margin:0; color:#69615B; font-size:13px;">
+        Upload a multi-category <strong>CSV</strong>, <strong>Excel (.xlsx)</strong>, or an image <strong>ZIP archive</strong>. Use Dry-Run mode to validate data before saving to SQLite.
+      </p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div style="margin-bottom: 18px;">
+        <label style="display:block; font-weight:600; margin-bottom:6px; color:#302B28;">
+          Select File (.csv, .xlsx, or .zip):
+        </label>
+        <input type="file" name="import_file" required accept=".csv,.xlsx,.xls,.zip" style="padding:6px; border:1px solid #D8CFC6; border-radius:4px; background:#FFF;" />
+      </div>
+
+      <div style="margin-bottom: 20px; display:flex; gap:24px; flex-wrap:wrap;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:#302B28;">
+          <input type="checkbox" name="is_dry_run" value="1" {% if is_dry_run or not submitted %}checked{% endif %} />
+          <span><strong>Dry-Run Preview</strong> (Validate data and show row-level errors without saving)</span>
+        </label>
+
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:#302B28;">
+          <input type="checkbox" name="auto_create_categories" value="1" />
+          <span><strong>Auto-create missing categories</strong> if not present in store</span>
+        </label>
+      </div>
+
+      <div>
+        <button type="submit" class="btn-burgundy">
+          Upload &amp; Process File
+        </button>
+        <a href="{% url 'admin:store_product_template_csv' %}" class="btn-secondary">Download Sample CSV</a>
+        <a href="{% url 'admin:store_product_template_excel' %}" class="btn-secondary">Download Sample Excel</a>
+        <a href="{% url 'admin:store_product_changelist' %}" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  {% if report %}
+  <div class="import-card">
+    <div class="import-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h3 style="margin:0; font-size:18px; color:#302B28;">
+          Import Results &amp; Validation Report
+        </h3>
+        <span style="font-size:12px; color:#69615B;">
+          {% if report.is_dry_run %}
+            <strong style="color:#856404;">[DRY-RUN MODE]</strong> No database rows were modified.
+          {% else %}
+            <strong style="color:#2E7D32;">[COMMITTED]</strong> Changes successfully saved to SQLite.
+          {% endif %}
+        </span>
+      </div>
+      <div style="font-size:13px;">
+        <span style="margin-right:12px;">Total Rows: <strong>{{ report.total_rows }}</strong></span>
+        <span style="margin-right:12px; color:#2E7D32;">Valid: <strong>{{ report.valid_count }}</strong></span>
+        <span style="color:#C62828;">Errors: <strong>{{ report.error_count }}</strong></span>
+      </div>
+    </div>
+
+    {% if report.zip_images_count %}
+    <div style="background:#F0F7FF; border:1px solid #C2DCFF; padding:12px 16px; border-radius:4px; margin-bottom:16px;">
+      <h4 style="margin:0 0 6px 0; color:#0A488F;">ZIP Archive Processed</h4>
+      <p style="margin:0; font-size:13px; color:#302B28;">
+        Found <strong>{{ report.zip_images_count }}</strong> image files. Matched <strong>{{ report.zip_images_attached|length }}</strong> photos to products:
+      </p>
+      <ul style="margin:8px 0 0 16px; font-size:12px;">
+        {% for att in report.zip_images_attached %}
+          <li><strong>{{ att.file }}</strong> &rarr; {{ att.product }} (Color: {{ att.color }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if report.errors %}
+    <div style="background:#FFF5F5; border:1px solid #FFD0D0; padding:14px; border-radius:4px; margin-bottom:16px;">
+      <h4 style="margin:0 0 8px 0; color:#C62828;">Row-Level Errors Found ({{ report.errors|length }})</h4>
+      <ul style="margin:0 0 0 16px; padding:0; font-size:12px; color:#900;">
+        {% for err in report.errors %}
+          <li style="margin-bottom:4px;">
+            <strong>Row {{ err.row }}</strong> [{{ err.column }}]: {{ err.message }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if report.preview_rows %}
+    <h4 style="margin:16px 0 8px 0;">Row Preview</h4>
+    <table class="table-preview">
+      <thead>
+        <tr>
+          <th>Row</th>
+          <th>Status</th>
+          <th>Name</th>
+          <th>Slug</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Color</th>
+          <th>In Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in report.preview_rows %}
+        <tr>
+          <td>{{ row.row }}</td>
+          <td>
+            {% if row.status == "Valid" %}
+              <span class="badge-valid">Valid</span>
+            {% else %}
+              <span class="badge-error">Error</span>
+            {% endif %}
+          </td>
+          <td><strong>{{ row.name }}</strong></td>
+          <td><code>{{ row.slug }}</code></td>
+          <td>{{ row.category }}</td>
+          <td>₹{{ row.price }}</td>
+          <td>{{ row.color }}</td>
+          <td>{{ row.in_stock }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{
+  "_notice": "PERMANENT ENVIRONMENT & CONFIGURATION BACKUP FOR RYNA'S WARDROBE (ANASTASIA'S ATELIER)",
+  "saved_at": "2026-11-02T14:17:00+05:30",
+  "project_name": "Ryna's Wardrobe",
+  "legacy_brand_alias": "Anastasia's Wardrobe",
+  "project_root": "C:\\Users\\USER\\OneDrive\\Desktop\\Anastasia's Wardrobe",
+  "architecture": {
+    "frontend": {
+      "framework": "Next.js 15 (React 19, TypeScript, Tailwind CSS, Lucide Icons, Radix UI)",
+      "directory": "artifacts/rynas-wardrobe",
+      "port": 3000,
+      "dev_command": "npm run dev",
+      "package_manager": "npm / pnpm",
+      "env_file": "artifacts/rynas-wardrobe/.env.local",
+      "env_variables": {
+        "NEXT_PUBLIC_API_URL": "http://127.0.0.1:8000/api",
+        "NEXT_PUBLIC_USE_MOCK_DATA": "false",
+        "NEXT_PUBLIC_RAZORPAY_KEY_ID": "rzp_test_519RynaAtelier"
+      }
+    },
+    "backend": {
+      "framework": "Django 5.x REST Framework (Python 3.14 venv, SQLite, Django Cache)",
+      "directory": "backend",
+      "port": 8000,
+      "python_interpreter": "backend/venv/Scripts/python.exe",
+      "dev_command": "manage.py runserver 0.0.0.0:8000",
+      "env_file": "backend/.env",
+      "env_variables": {
+        "DJANGO_SUPERUSER_USERNAME": "user",
+        "DJANGO_SUPERUSER_EMAIL": "asfiyaf343@gmail.com",
+        "DJANGO_SUPERUSER_PASSWORD": "AshShalif",
+        "DJANGO_SECRET_KEY": "django-insecure-change-this-in-production",
+        "DEBUG": "True",
+        "ALLOWED_HOSTS": "*",
+        "DB_ENGINE": "django.db.backends.sqlite3",
+        "DB_NAME": "db.sqlite3",
+        "FRONTEND_URL": "http://localhost:3000",
+        "RAZORPAY_KEY_ID": "rzp_test_519RynaAtelier",
+        "RAZORPAY_KEY_SECRET": "secret_test_RynaAtelierSecret2026",
+        "EMAIL_HOST": "smtp.gmail.com",
+        "EMAIL_PORT": "587",
+        "EMAIL_USE_TLS": "True",
+        "EMAIL_HOST_USER": "asfiyaf343@gmail.com",
+        "EMAIL_HOST_PASSWORD": "",
+        "DEFAULT_FROM_EMAIL": "Ryna's Wardrobe <asfiyaf343@gmail.com>"
+      }
+    },
+    "database": {
+      "engine": "SQLite3",
+      "active_file": "backend/db.sqlite3",
+      "latest_backup": "backend/backups/db_snapshot_latest.sqlite3",
+      "timestamped_backups": "backend/backups/",
+      "product_count": 25,
+      "gallery_image_count": 125,
+      "tables_count": 23
+    }
+  },
+  "credentials": {
+    "admin_console_url": "http://127.0.0.1:8000/admin/",
+    "superuser": {
+      "username": "user",
+      "password": "AshShalif",
+      "email": "asfiyaf343@gmail.com"
+    },
+    "staff_portal_url": "http://localhost:3000/staff",
+    "payment_gateway": {
+      "provider": "Razorpay Sandbox",
+      "key_id": "rzp_test_519RynaAtelier",
+      "key_secret": "secret_test_RynaAtelierSecret2026"
+    }
+  },
+  "startup_scripts": {
+    "one_click_windows_batch": "START_PROJECT.bat",
+    "one_click_powershell": "START_PROJECT.ps1",
+    "manual_reference": "run commands.md",
+    "master_guide": "MASTER_RESUME_GUIDE.md"
+  }
+}
+
