@@ -30,6 +30,18 @@
 
 {% block extrahead %}
 {{ block.super }}
+<script>
+  (function() {
+    try {
+      const savedTheme = localStorage.getItem('django.admin.theme') || localStorage.getItem('aw-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch(e) {}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -73,25 +85,7 @@
     --aw-shadow-md:    0 4px 14px rgba(0,0,0,0.5);
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --aw-wine:         #E58FA5;
-      --aw-wine-dark:    #CC7088;
-      --aw-wine-light:   #F3B3C3;
-      --aw-paper:        #131110;
-      --aw-card:         #1E1B19;
-      --aw-border:       #38322D;
-      --aw-border-soft:  #292420;
-      --aw-ink:          #F7F3EE;
-      --aw-muted:        #B5ACA4;
-      --aw-gold:         #E5C583;
-      --aw-row-alt:      #23201D;
-      --aw-row-hover:    #2E2925;
-      --aw-shadow-sm:    0 1px 3px rgba(0,0,0,0.4);
-      --aw-shadow-md:    0 4px 14px rgba(0,0,0,0.5);
-    }
-  }
-
+  
   /* ─── Global Base & Full-Width Reset (No blank space below) ─ */
   html, body {
     margin: 0 !important;
@@ -129,7 +123,7 @@
     content: "RYNA'S WARDROBE · ATELIER MANAGEMENT CONSOLE · SYNCHRONIZED WITH STOREFRONT";
     display: block;
     width: 100%;
-    background-color: var(--aw-wine);
+    background-color: #713A48 !important;
     color: #FFFDFA;
     font-family: 'Inter', sans-serif;
     font-size: 11.5px;

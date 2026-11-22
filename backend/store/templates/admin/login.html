@@ -12,32 +12,66 @@
 
 {% block content %}
 <style>
-  /* ─── Atelier Luxury Staff Login Card ─── */
+  /* ─── Global Atelier Canvas Reset ─────────────────────────────────────────── */
+  html, body, #container, #content {
+    background-color: var(--aw-paper, #F8F5EF) !important;
+    color: var(--aw-ink, #302B28) !important;
+  }
+
+  /* ─── Main Centered Layout ─────────────────────────────────────────────────── */
   .aw-login-canvas {
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 130px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 30px 16px 60px;
+    padding: 36px 16px 60px;
+    box-sizing: border-box;
   }
 
+  /* ─── Atelier Porcelain Card ───────────────────────────────────────────────── */
   .aw-login-card {
     width: 100%;
     max-width: 440px;
-    background: var(--aw-card, #FFFDFA);
-    border: 1px solid var(--aw-border, #D8CFC6);
+    background: var(--aw-card, #FFFDFA) !important;
+    border: 1px solid var(--aw-border, #D8CFC6) !important;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(48, 43, 40, 0.08);
     overflow: hidden;
-    padding: 36px 32px 32px;
-    animation: awCardFadeIn 0.3s ease-out;
+    padding: 38px 34px 34px;
+    position: relative;
+    box-sizing: border-box;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
   }
 
-  @keyframes awCardFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+  /* ─── Theme Switcher at Top-Right of Card ─────────────────────────────────── */
+  .aw-theme-toggle {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: transparent;
+    border: 1px solid var(--aw-border, #D8CFC6);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--aw-muted, #69615B);
+    transition: all 0.2s ease;
+  }
+  .aw-theme-toggle:hover {
+    color: var(--aw-wine, #713A48);
+    border-color: var(--aw-wine, #713A48);
+    background: rgba(113, 58, 72, 0.06);
+  }
+  .aw-theme-toggle svg {
+    width: 16px;
+    height: 16px;
+    display: block;
   }
 
+  /* ─── Card Header Branding ─────────────────────────────────────────────────── */
   .aw-login-header {
     text-align: center;
     margin-bottom: 28px;
@@ -53,42 +87,47 @@
   }
 
   .aw-login-title {
-    font-family: 'Lora', Georgia, serif;
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--aw-ink, #302B28);
-    margin: 0 0 4px;
+    font-family: 'Lora', Georgia, serif !important;
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    color: var(--aw-ink, #302B28) !important;
+    margin: 0 0 5px !important;
     letter-spacing: 0.01em;
   }
 
   .aw-login-subtitle {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 11.5px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--aw-muted, #69615B);
-    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--aw-wine, #713A48) !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
   }
 
+  /* ─── Error Notification Banner ────────────────────────────────────────────── */
   .aw-error-banner {
-    background: rgba(113, 58, 72, 0.08);
-    border: 1px solid var(--aw-wine, #713A48);
-    color: var(--aw-wine, #713A48);
+    background: rgba(113, 58, 72, 0.08) !important;
+    border: 1px solid var(--aw-wine, #713A48) !important;
+    color: var(--aw-wine, #713A48) !important;
     padding: 12px 14px;
     border-radius: 6px;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 13px;
+    font-weight: 500;
     line-height: 1.5;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
   }
-
   .aw-error-banner svg {
     flex-shrink: 0;
     margin-top: 2px;
+    stroke: var(--aw-wine, #713A48);
   }
 
+  /* ─── Field Groups & Labels ─────────────────────────────────────────────────── */
   .aw-field-group {
     margin-bottom: 20px;
   }
@@ -97,23 +136,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 7px;
   }
 
   .aw-label {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--aw-ink, #302B28);
-    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    color: var(--aw-ink, #302B28) !important;
+    margin: 0 !important;
   }
 
   .aw-forgot-link {
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 12px;
-    color: var(--aw-wine, #713A48);
+    font-weight: 500;
+    color: var(--aw-wine, #713A48) !important;
     text-decoration: none;
     transition: opacity 0.15s ease;
   }
@@ -122,6 +162,7 @@
     opacity: 0.85;
   }
 
+  /* ─── High-Contrast Inputs (Light Theme by Default) ────────────────────────── */
   .aw-input-wrapper {
     position: relative;
     width: 100%;
@@ -131,30 +172,37 @@
 
   .aw-input {
     width: 100% !important;
-    height: 44px !important;
+    height: 46px !important;
     padding: 0 14px !important;
     font-family: 'Inter', system-ui, sans-serif !important;
-    font-size: 14px !important;
-    color: var(--aw-ink, #302B28) !important;
-    background: var(--aw-paper, #F8F5EF) !important;
-    border: 1px solid var(--aw-border, #D8CFC6) !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #1C1917 !important; /* Always high-contrast deep charcoal in light mode */
+    background-color: #FFFFFF !important;
+    border: 1.5px solid #D8CFC6 !important;
     border-radius: 6px !important;
     box-sizing: border-box !important;
-    transition: border-color 0.2s, box-shadow 0.2s !important;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s !important;
+  }
+
+  .aw-input::placeholder {
+    color: #78716C !important;
+    font-size: 13.5px !important;
   }
 
   .aw-input.has-eye {
-    padding-right: 44px !important;
+    padding-right: 46px !important;
   }
 
   .aw-input:focus {
     outline: none !important;
-    border-color: var(--aw-wine, #713A48) !important;
-    box-shadow: 0 0 0 3px rgba(113, 58, 72, 0.15) !important;
-    background: #FFFFFF !important;
+    border-color: #713A48 !important;
+    box-shadow: 0 0 0 3px rgba(113, 58, 72, 0.18) !important;
+    background-color: #FFFFFF !important;
+    color: #1C1917 !important;
   }
 
-  /* Password Eye Toggle Button */
+  /* ─── Password Eye Toggle Button ───────────────────────────────────────────── */
   .aw-eye-btn {
     position: absolute;
     right: 8px;
@@ -163,64 +211,65 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 6px;
+    padding: 7px;
     border-radius: 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--aw-muted, #69615B);
+    color: #713A48 !important; /* Crisp Burgundy icon */
     transition: color 0.15s, background-color 0.15s;
     user-select: none;
   }
 
   .aw-eye-btn:hover {
-    color: var(--aw-wine, #713A48);
-    background: rgba(113, 58, 72, 0.08);
+    color: #582B37 !important;
+    background-color: rgba(113, 58, 72, 0.08) !important;
   }
 
   .aw-eye-btn:focus {
     outline: none;
-    box-shadow: 0 0 0 2px var(--aw-wine, #713A48);
+    box-shadow: 0 0 0 2px #713A48;
   }
 
   .aw-eye-btn svg {
-    width: 19px;
-    height: 19px;
+    width: 20px;
+    height: 20px;
     display: block;
+    stroke-width: 2 !important;
   }
 
-  /* Submit Button */
+  /* ─── Submit Button (Signature Atelier Burgundy) ────────────────────────────── */
   .aw-submit-btn {
     width: 100%;
-    height: 44px;
-    background: var(--aw-wine, #713A48);
+    height: 46px;
+    background-color: #713A48 !important;
     color: #FFFFFF !important;
     border: none;
     border-radius: 6px;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
-    box-shadow: 0 2px 6px rgba(113, 58, 72, 0.25);
-    margin-top: 10px;
+    box-shadow: 0 3px 10px rgba(113, 58, 72, 0.25);
+    margin-top: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .aw-submit-btn:hover {
-    background: var(--aw-wine-dark, #582B37);
-    box-shadow: 0 4px 12px rgba(113, 58, 72, 0.35);
+    background-color: #582B37 !important;
+    box-shadow: 0 5px 16px rgba(113, 58, 72, 0.35);
   }
 
   .aw-submit-btn:active {
     transform: scale(0.99);
   }
 
-  /* Quick-Login Assistance Box */
+  /* ─── 1-Click Credential Chips ─────────────────────────────────────────────── */
   .aw-quick-assist {
     margin-top: 26px;
     padding-top: 20px;
@@ -234,9 +283,7 @@
     letter-spacing: 0.08em;
     color: var(--aw-muted, #69615B);
     margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    font-weight: 500;
   }
 
   .aw-chips-container {
@@ -246,11 +293,11 @@
   }
 
   .aw-chip-btn {
-    background: var(--aw-paper, #F8F5EF);
+    background-color: var(--aw-paper, #F8F5EF);
     border: 1px solid var(--aw-border, #D8CFC6);
     border-radius: 4px;
     padding: 6px 10px;
-    font-size: 11px;
+    font-size: 11.5px;
     font-family: 'Inter', system-ui, sans-serif;
     color: var(--aw-ink, #302B28);
     cursor: pointer;
@@ -262,9 +309,9 @@
   }
 
   .aw-chip-btn:hover {
-    border-color: var(--aw-wine, #713A48);
-    background: rgba(113, 58, 72, 0.05);
-    color: var(--aw-wine, #713A48);
+    border-color: #713A48;
+    background-color: rgba(113, 58, 72, 0.06);
+    color: #713A48;
   }
 
   .aw-chip-role {
@@ -276,14 +323,113 @@
     color: var(--aw-muted, #69615B);
   }
 
-  /* Reset Password Modal / Dialog */
+  /* ─── Explicit Autofill Fix (Prevents Browser Contrast Bugs) ───────────────── */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #1C1917 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* ─── High-Contrast Dark Theme Overrides (When Explicitly Active) ──────────── */
+  html[data-theme="dark"] .aw-login-canvas,
+  body[data-theme="dark"] .aw-login-canvas {
+    background-color: #181514 !important;
+  }
+
+  html[data-theme="dark"] .aw-login-card,
+  body[data-theme="dark"] .aw-login-card {
+    background: #23201D !important;
+    border-color: #443D37 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  html[data-theme="dark"] .aw-login-title,
+  body[data-theme="dark"] .aw-login-title {
+    color: #F7F3EE !important;
+  }
+
+  html[data-theme="dark"] .aw-login-subtitle,
+  body[data-theme="dark"] .aw-login-subtitle {
+    color: #E58FA5 !important;
+  }
+
+  html[data-theme="dark"] .aw-label,
+  body[data-theme="dark"] .aw-label {
+    color: #F7F3EE !important;
+  }
+
+  html[data-theme="dark"] .aw-forgot-link,
+  body[data-theme="dark"] .aw-forgot-link {
+    color: #E58FA5 !important;
+  }
+
+  html[data-theme="dark"] .aw-input,
+  body[data-theme="dark"] .aw-input {
+    background-color: #2A2522 !important;
+    border-color: #443D37 !important;
+    color: #FFFFFF !important; /* 100% visible bright pure white text in dark mode! */
+  }
+
+  html[data-theme="dark"] .aw-input::placeholder,
+  body[data-theme="dark"] .aw-input::placeholder {
+    color: #A8A29E !important;
+  }
+
+  html[data-theme="dark"] .aw-input:focus,
+  body[data-theme="dark"] .aw-input:focus {
+    background-color: #352F2B !important;
+    border-color: #E58FA5 !important;
+    box-shadow: 0 0 0 3px rgba(229, 143, 165, 0.25) !important;
+    color: #FFFFFF !important;
+  }
+
+  html[data-theme="dark"] .aw-eye-btn,
+  body[data-theme="dark"] .aw-eye-btn {
+    color: #E58FA5 !important;
+  }
+
+  html[data-theme="dark"] .aw-eye-btn:hover,
+  body[data-theme="dark"] .aw-eye-btn:hover {
+    color: #F3B3C3 !important;
+    background-color: rgba(229, 143, 165, 0.12) !important;
+  }
+
+  html[data-theme="dark"] .aw-submit-btn,
+  body[data-theme="dark"] .aw-submit-btn {
+    background-color: #713A48 !important;
+  }
+  html[data-theme="dark"] .aw-submit-btn:hover,
+  body[data-theme="dark"] .aw-submit-btn:hover {
+    background-color: #8E4C5D !important;
+  }
+
+  html[data-theme="dark"] input:-webkit-autofill,
+  html[data-theme="dark"] input:-webkit-autofill:hover,
+  html[data-theme="dark"] input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #FFFFFF !important;
+    -webkit-box-shadow: 0 0 0px 1000px #2A2522 inset !important;
+  }
+
+  html[data-theme="dark"] .aw-chip-btn,
+  body[data-theme="dark"] .aw-chip-btn {
+    background-color: #2A2522 !important;
+    border-color: #443D37 !important;
+    color: #F7F3EE !important;
+  }
+  html[data-theme="dark"] .aw-chip-btn:hover,
+  body[data-theme="dark"] .aw-chip-btn:hover {
+    border-color: #E58FA5 !important;
+    color: #E58FA5 !important;
+  }
+
+  /* ─── Modal Dialog ─────────────────────────────────────────────────────────── */
   .aw-modal-backdrop {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
     background: rgba(48, 43, 40, 0.6);
     backdrop-filter: blur(2px);
     z-index: 9999;
@@ -291,14 +437,10 @@
     justify-content: center;
     padding: 20px;
   }
-
-  .aw-modal-backdrop.is-open {
-    display: flex;
-  }
-
+  .aw-modal-backdrop.is-open { display: flex; }
   .aw-modal-box {
-    background: var(--aw-card, #FFFDFA);
-    border: 1px solid var(--aw-border, #D8CFC6);
+    background: #FFFDFA;
+    border: 1px solid #D8CFC6;
     border-radius: 10px;
     max-width: 420px;
     width: 100%;
@@ -306,24 +448,21 @@
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
     font-family: 'Inter', system-ui, sans-serif;
   }
-
   .aw-modal-title {
     font-family: 'Lora', Georgia, serif;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 600;
-    color: var(--aw-ink, #302B28);
-    margin: 0 0 10px;
+    color: #302B28;
+    margin: 0 0 12px;
   }
-
   .aw-modal-text {
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.6;
-    color: var(--aw-muted, #69615B);
+    color: #69615B;
     margin: 0 0 20px;
   }
-
   .aw-modal-close-btn {
-    background: var(--aw-wine, #713A48);
+    background: #713A48;
     color: #FFFFFF;
     border: none;
     padding: 10px 20px;
@@ -339,12 +478,34 @@
 
 <div class="aw-login-canvas">
   <div class="aw-login-card">
+    <!-- Quick Theme Switcher Button -->
+    <button type="button" class="aw-theme-toggle" id="aw-theme-toggle-btn" aria-label="Toggle Light / Dark Theme" title="Toggle Theme">
+      <!-- Sun icon (shown in dark theme) -->
+      <svg id="aw-sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <!-- Moon icon (shown in light theme) -->
+      <svg id="aw-moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+
+    <!-- Header Branding -->
     <div class="aw-login-header">
       <img src="{% static 'images/ryna-logo.png' %}" alt="Ryna's Wardrobe" class="aw-login-crest" onerror="this.style.display='none'" />
       <h1 class="aw-login-title">Ryna's Wardrobe</h1>
       <p class="aw-login-subtitle">Atelier Administration & Operations</p>
     </div>
 
+    <!-- Error Banner -->
     {% if form.errors and not form.non_field_errors %}
       <div class="aw-error-banner" role="alert">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -371,7 +532,7 @@
       {% csrf_token %}
       <input type="hidden" name="next" value="{{ next }}">
 
-      <!-- Username / Email Field -->
+      <!-- Username / Staff Email Field -->
       <div class="aw-field-group">
         <div class="aw-field-header">
           <label for="id_username" class="aw-label">Username or Staff Email</label>
@@ -391,7 +552,7 @@
         </div>
       </div>
 
-      <!-- Password Field with Eye Toggle -->
+      <!-- Password Field with Eye Toggle Icon -->
       <div class="aw-field-group">
         <div class="aw-field-header">
           <label for="id_password" class="aw-label">Password</label>
@@ -415,12 +576,12 @@
             title="Show password"
           >
             <!-- Open Eye Icon (Shown when password masked) -->
-            <svg id="aw-icon-eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg id="aw-icon-eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
               <circle cx="12" cy="12" r="3"></circle>
             </svg>
             <!-- Slashed Eye Icon (Shown when password visible) -->
-            <svg id="aw-icon-eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <svg id="aw-icon-eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
               <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
               <line x1="1" y1="1" x2="23" y2="23"></line>
             </svg>
@@ -478,6 +639,37 @@
 </div>
 
 <script>
+  // ─── Theme Sync & Toggle ────────────────────────────────────────────────────
+  (function() {
+    const toggleBtn = document.getElementById('aw-theme-toggle-btn');
+    const sunIcon = document.getElementById('aw-sun-icon');
+    const moonIcon = document.getElementById('aw-moon-icon');
+
+    function updateIcons(isDark) {
+      if (sunIcon && moonIcon) {
+        sunIcon.style.display = isDark ? 'block' : 'none';
+        moonIcon.style.display = isDark ? 'none' : 'block';
+      }
+    }
+
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    updateIcons(currentTheme === 'dark');
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const activeTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        try {
+          localStorage.setItem('django.admin.theme', nextTheme);
+          localStorage.setItem('aw-theme', nextTheme);
+        } catch(err) {}
+        updateIcons(nextTheme === 'dark');
+      });
+    }
+  })();
+
   // ─── Eye Icon Toggle Logic ──────────────────────────────────────────────────
   (function() {
     const pwdInput = document.getElementById('id_password');
