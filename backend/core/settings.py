@@ -209,6 +209,16 @@ else:
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_TIMEOUT = 10
 
+# ─── Authentication & User Credentials ────────────────────────────────────────
+DJANGO_SUPERUSER_USERNAME = os.getenv("DJANGO_SUPERUSER_USERNAME", "USER").strip()
+DJANGO_SUPERUSER_EMAIL = os.getenv("DJANGO_SUPERUSER_EMAIL", "staff@rynaswardrobe.com").strip()
+DJANGO_SUPERUSER_PASSWORD = os.getenv("DJANGO_SUPERUSER_PASSWORD", "AshShalif").strip()
+
+AUTHENTICATION_BACKENDS = [
+    "store.authentication.EmailOrUsernameModelBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 # LocMemCache provides fast, thread-safe in-memory caching immune to Windows/OneDrive file locking
 CACHES = {
     "default": {

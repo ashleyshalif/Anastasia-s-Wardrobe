@@ -1,0 +1,544 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% if form.errors %}{% translate "Error:" %} {% endif %}{% translate "Atelier Staff Login" %} | Ryna's Wardrobe{% endblock %}
+
+{% block bodyclass %}{{ block.super }} login aw-login-page{% endblock %}
+{% block usertools %}{% endblock %}
+{% block nav-global %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block content %}
+<style>
+  /* ─── Atelier Luxury Staff Login Card ─── */
+  .aw-login-canvas {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 16px 60px;
+  }
+
+  .aw-login-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--aw-card, #FFFDFA);
+    border: 1px solid var(--aw-border, #D8CFC6);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(48, 43, 40, 0.08);
+    overflow: hidden;
+    padding: 36px 32px 32px;
+    animation: awCardFadeIn 0.3s ease-out;
+  }
+
+  @keyframes awCardFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .aw-login-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .aw-login-crest {
+    height: 48px;
+    width: auto;
+    max-width: 150px;
+    margin: 0 auto 12px;
+    display: block;
+    object-fit: contain;
+  }
+
+  .aw-login-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--aw-ink, #302B28);
+    margin: 0 0 4px;
+    letter-spacing: 0.01em;
+  }
+
+  .aw-login-subtitle {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--aw-muted, #69615B);
+    margin: 0;
+  }
+
+  .aw-error-banner {
+    background: rgba(113, 58, 72, 0.08);
+    border: 1px solid var(--aw-wine, #713A48);
+    color: var(--aw-wine, #713A48);
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .aw-error-banner svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .aw-field-group {
+    margin-bottom: 20px;
+  }
+
+  .aw-field-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .aw-label {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--aw-ink, #302B28);
+    margin: 0;
+  }
+
+  .aw-forgot-link {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    color: var(--aw-wine, #713A48);
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
+  .aw-forgot-link:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+  }
+
+  .aw-input-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .aw-input {
+    width: 100% !important;
+    height: 44px !important;
+    padding: 0 14px !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 14px !important;
+    color: var(--aw-ink, #302B28) !important;
+    background: var(--aw-paper, #F8F5EF) !important;
+    border: 1px solid var(--aw-border, #D8CFC6) !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+  }
+
+  .aw-input.has-eye {
+    padding-right: 44px !important;
+  }
+
+  .aw-input:focus {
+    outline: none !important;
+    border-color: var(--aw-wine, #713A48) !important;
+    box-shadow: 0 0 0 3px rgba(113, 58, 72, 0.15) !important;
+    background: #FFFFFF !important;
+  }
+
+  /* Password Eye Toggle Button */
+  .aw-eye-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--aw-muted, #69615B);
+    transition: color 0.15s, background-color 0.15s;
+    user-select: none;
+  }
+
+  .aw-eye-btn:hover {
+    color: var(--aw-wine, #713A48);
+    background: rgba(113, 58, 72, 0.08);
+  }
+
+  .aw-eye-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--aw-wine, #713A48);
+  }
+
+  .aw-eye-btn svg {
+    width: 19px;
+    height: 19px;
+    display: block;
+  }
+
+  /* Submit Button */
+  .aw-submit-btn {
+    width: 100%;
+    height: 44px;
+    background: var(--aw-wine, #713A48);
+    color: #FFFFFF !important;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 2px 6px rgba(113, 58, 72, 0.25);
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aw-submit-btn:hover {
+    background: var(--aw-wine-dark, #582B37);
+    box-shadow: 0 4px 12px rgba(113, 58, 72, 0.35);
+  }
+
+  .aw-submit-btn:active {
+    transform: scale(0.99);
+  }
+
+  /* Quick-Login Assistance Box */
+  .aw-quick-assist {
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid var(--aw-border-soft, #EDE7DF);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .aw-assist-header {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--aw-muted, #69615B);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .aw-chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .aw-chip-btn {
+    background: var(--aw-paper, #F8F5EF);
+    border: 1px solid var(--aw-border, #D8CFC6);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--aw-ink, #302B28);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .aw-chip-btn:hover {
+    border-color: var(--aw-wine, #713A48);
+    background: rgba(113, 58, 72, 0.05);
+    color: var(--aw-wine, #713A48);
+  }
+
+  .aw-chip-role {
+    font-weight: 600;
+  }
+
+  .aw-chip-tag {
+    font-size: 10px;
+    color: var(--aw-muted, #69615B);
+  }
+
+  /* Reset Password Modal / Dialog */
+  .aw-modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(48, 43, 40, 0.6);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .aw-modal-backdrop.is-open {
+    display: flex;
+  }
+
+  .aw-modal-box {
+    background: var(--aw-card, #FFFDFA);
+    border: 1px solid var(--aw-border, #D8CFC6);
+    border-radius: 10px;
+    max-width: 420px;
+    width: 100%;
+    padding: 28px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .aw-modal-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--aw-ink, #302B28);
+    margin: 0 0 10px;
+  }
+
+  .aw-modal-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--aw-muted, #69615B);
+    margin: 0 0 20px;
+  }
+
+  .aw-modal-close-btn {
+    background: var(--aw-wine, #713A48);
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 100%;
+  }
+</style>
+
+<div class="aw-login-canvas">
+  <div class="aw-login-card">
+    <div class="aw-login-header">
+      <img src="{% static 'images/ryna-logo.png' %}" alt="Ryna's Wardrobe" class="aw-login-crest" onerror="this.style.display='none'" />
+      <h1 class="aw-login-title">Ryna's Wardrobe</h1>
+      <p class="aw-login-subtitle">Atelier Administration & Operations</p>
+    </div>
+
+    {% if form.errors and not form.non_field_errors %}
+      <div class="aw-error-banner" role="alert">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div>
+          {% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+        <div class="aw-error-banner" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <div>{{ error }}</div>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form action="{{ app_path }}" method="post" id="login-form">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <!-- Username / Email Field -->
+      <div class="aw-field-group">
+        <div class="aw-field-header">
+          <label for="id_username" class="aw-label">Username or Staff Email</label>
+        </div>
+        <div class="aw-input-wrapper">
+          <input
+            type="text"
+            name="username"
+            id="id_username"
+            required
+            autocomplete="username"
+            placeholder="e.g. user or staff@rynaswardrobe.com"
+            class="aw-input"
+            value="{{ form.username.value|default:'' }}"
+            autofocus
+          >
+        </div>
+      </div>
+
+      <!-- Password Field with Eye Toggle -->
+      <div class="aw-field-group">
+        <div class="aw-field-header">
+          <label for="id_password" class="aw-label">Password</label>
+          <a href="#" onclick="openForgotModal(); return false;" class="aw-forgot-link">Forgotten password?</a>
+        </div>
+        <div class="aw-input-wrapper">
+          <input
+            type="password"
+            name="password"
+            id="id_password"
+            required
+            autocomplete="current-password"
+            placeholder="Enter staff password"
+            class="aw-input has-eye"
+          >
+          <button
+            type="button"
+            id="aw-password-toggle-btn"
+            class="aw-eye-btn"
+            aria-label="Toggle password visibility"
+            title="Show password"
+          >
+            <!-- Open Eye Icon (Shown when password masked) -->
+            <svg id="aw-icon-eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <!-- Slashed Eye Icon (Shown when password visible) -->
+            <svg id="aw-icon-eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit Row -->
+      <button type="submit" class="aw-submit-btn" id="aw-submit-btn">
+        Log In to Atelier Admin
+      </button>
+
+      <!-- 1-Click Evaluation / Test Credential Fillers -->
+      <div class="aw-quick-assist">
+        <div class="aw-assist-header">
+          <span>Quick 1-Click Sign-In Helper:</span>
+        </div>
+        <div class="aw-chips-container">
+          <button type="button" class="aw-chip-btn" onclick="fillCreds('user', 'AshShalif')">
+            <span class="aw-chip-role">user</span>
+            <span class="aw-chip-tag">(AshShalif)</span>
+          </button>
+          <button type="button" class="aw-chip-btn" onclick="fillCreds('USER', 'Maya@123')">
+            <span class="aw-chip-role">USER</span>
+            <span class="aw-chip-tag">(Maya@123)</span>
+          </button>
+          <button type="button" class="aw-chip-btn" onclick="fillCreds('staff_orders', 'Maya@123')">
+            <span class="aw-chip-role">staff_orders</span>
+          </button>
+          <button type="button" class="aw-chip-btn" onclick="fillCreds('staff_concierge', 'Maya@123')">
+            <span class="aw-chip-role">staff_concierge</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Forgotten Password Modal -->
+<div id="aw-forgot-modal" class="aw-modal-backdrop" onclick="if(event.target===this) closeForgotModal();">
+  <div class="aw-modal-box">
+    <h3 class="aw-modal-title">Atelier Staff Password Recovery</h3>
+    <p class="aw-modal-text">
+      For executive security, admin and staff passwords are synchronised with your <code>backend/.env</code> configuration.<br><br>
+      You can sign in using your designated username:
+      <br>• <strong>user</strong> with password <strong>AshShalif</strong>
+      <br>• <strong>USER</strong> with password <strong>Maya@123</strong>
+      <br><br>
+      To change or reset credentials, update <code>DJANGO_SUPERUSER_PASSWORD</code> in <code>backend/.env</code>.
+    </p>
+    <button type="button" class="aw-modal-close-btn" onclick="closeForgotModal();">
+      Understood & Return to Login
+    </button>
+  </div>
+</div>
+
+<script>
+  // ─── Eye Icon Toggle Logic ──────────────────────────────────────────────────
+  (function() {
+    const pwdInput = document.getElementById('id_password');
+    const toggleBtn = document.getElementById('aw-password-toggle-btn');
+    const eyeOpen = document.getElementById('aw-icon-eye-open');
+    const eyeClosed = document.getElementById('aw-icon-eye-closed');
+
+    if (toggleBtn && pwdInput) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const isPassword = pwdInput.type === 'password';
+        pwdInput.type = isPassword ? 'text' : 'password';
+
+        if (isPassword) {
+          eyeOpen.style.display = 'none';
+          eyeClosed.style.display = 'block';
+          toggleBtn.title = 'Hide password';
+          toggleBtn.setAttribute('aria-label', 'Hide password');
+        } else {
+          eyeOpen.style.display = 'block';
+          eyeClosed.style.display = 'none';
+          toggleBtn.title = 'Show password';
+          toggleBtn.setAttribute('aria-label', 'Show password');
+        }
+        pwdInput.focus();
+      });
+    }
+
+    // Enter Key Submission Handler
+    [document.getElementById('id_username'), pwdInput].forEach(function(input) {
+      if (input) {
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            document.getElementById('login-form').submit();
+          }
+        });
+      }
+    });
+  })();
+
+  // ─── Quick Fill Helper ──────────────────────────────────────────────────────
+  function fillCreds(username, password) {
+    const userInput = document.getElementById('id_username');
+    const passInput = document.getElementById('id_password');
+    if (userInput && passInput) {
+      userInput.value = username;
+      passInput.value = password;
+      passInput.focus();
+    }
+  }
+
+  // ─── Modal Helpers ──────────────────────────────────────────────────────────
+  function openForgotModal() {
+    const modal = document.getElementById('aw-forgot-modal');
+    if (modal) modal.classList.add('is-open');
+  }
+
+  function closeForgotModal() {
+    const modal = document.getElementById('aw-forgot-modal');
+    if (modal) modal.classList.remove('is-open');
+  }
+</script>
+{% endblock %}
