@@ -20,7 +20,10 @@ class BearerOrTokenAuthentication(TokenAuthentication):
             # Fallback to HttpOnly cookie for XSS mitigation
             cookie_token = request.COOKIES.get("aw_auth_token")
             if cookie_token:
-                return self.authenticate_credentials(cookie_token)
+                try:
+                    return self.authenticate_credentials(cookie_token)
+                except exceptions.AuthenticationFailed:
+                    return None
             return None
 
         prefix = auth[0].decode("utf-8").lower()

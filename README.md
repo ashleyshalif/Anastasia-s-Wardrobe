@@ -1,8 +1,8 @@
-# 👗 Anastasia’s Wardrobe
+# 👗 Ryna's Wardrobe
 
 > *"Thoughtfully chosen styles for every age, every day, and every occasion. Beautifully chosen. For every chapter of her life."*
 
-**Anastasia’s Wardrobe** is a luxury, editorial e-commerce web application inspired by boutique European ateliers. Designed specifically for multi-generational fashion across **Girls 2–12**, **Teens 13–17**, and **Women’s Atelier Collections**, it delivers an uncompromising digital boutique shopping experience.
+**Ryna's Wardrobe** is a luxury, editorial e-commerce web application inspired by boutique European ateliers. Designed specifically for multi-generational fashion across **Girls 2–12**, **Teens 13–17**, and **Women’s Atelier Collections**, it delivers an uncompromising digital boutique shopping experience.
 
 ---
 

@@ -1,6 +1,6 @@
 """
 store/models.py
-Database models for Anastasia's Wardrobe.
+Database models for Ryna's Wardrobe.
 
 Each class here becomes a table in the database.
 We mirror the exact data the Next.js frontend uses.
@@ -144,18 +144,21 @@ class Product(models.Model):
 
     @property
     def primary_image_url(self):
-        """Returns the primary image URL or fallback to legacy image field."""
-        prim = self.images.filter(is_primary=True).first() or self.images.first()
-        if prim:
-            return prim.url
+        """Returns the primary image URL using prefetched images cache if available."""
+        all_imgs = list(self.images.all())
+        if all_imgs:
+            for img in all_imgs:
+                if img.is_primary:
+                    return img.url
+            return all_imgs[0].url
         return self.image or "/images/cardigan.png"
 
     @property
     def secondary_image_url(self):
         """Returns secondary image (side/back/lifestyle) for card hover preview."""
-        imgs = list(self.images.all()[:3])
-        if len(imgs) > 1:
-            return imgs[1].url
+        all_imgs = list(self.images.all())
+        if len(all_imgs) > 1:
+            return all_imgs[1].url
         if self.gallery_images and len(self.gallery_images) > 0:
             return self.gallery_images[0]
         return ""
@@ -444,6 +447,12 @@ class Order(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["email"]),
+            models.Index(fields=["status"]),
+            models.Index(fields=["created_at"]),
+            models.Index(fields=["email", "-created_at"]),
+        ]
 
     def save(self, *args, **kwargs):
         # Auto-generate a readable order number on first save
@@ -522,6 +531,10 @@ class ReturnRequest(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status"]),
+            models.Index(fields=["created_at"]),
+        ]
         verbose_name = "Return & Exchange Request"
         verbose_name_plural = "Return & Exchange Requests"
 
@@ -670,6 +683,10 @@ class EmailVerificationOTP(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["email", "is_used"]),
+            models.Index(fields=["expires_at"]),
+        ]
         verbose_name = "Email OTP Passkey"
         verbose_name_plural = "Email OTP Passkeys"
 

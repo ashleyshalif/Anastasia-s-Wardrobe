@@ -1,6 +1,6 @@
-# Anastasia's Wardrobe — Django Backend
+# Ryna's Wardrobe — Django Backend
 
-A Django REST Framework API that powers the Anastasia's Wardrobe Next.js frontend.
+A Django REST Framework API that powers the Ryna's Wardrobe Next.js frontend.
 
 ## Project Structure
 
@@ -41,10 +41,13 @@ backend/
 ## Setup Commands (PowerShell)
 
 ### 1. Create virtual environment
-```powershell
-cd "C:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe\backend"
+```bash
+cd backend
 python -m venv venv
-venv\Scripts\activate
+# Windows:
+.\venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
 ```
 
 ### 2. Install requirements

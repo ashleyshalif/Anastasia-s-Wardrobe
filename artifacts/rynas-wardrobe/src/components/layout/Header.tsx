@@ -104,26 +104,37 @@ function StaffHeader({ user, logout }: StaffHeaderProps) {
 
         {/* Staff Identity & Sign Out */}
         <div className="flex items-center gap-4">
-          <div className="text-right hidden sm:block">
-            <div className="text-[13px] font-medium text-[#302B28]">
-              {user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "Staff Member"}
-            </div>
-            <div className="text-[11px] text-[#713A48] font-medium">
-              {departmentName}
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              logout();
-              router.push("/account");
-            }}
-            className="px-3.5 py-1.5 bg-[#713A48] hover:bg-[#582D38] text-[#FFFDFA] rounded-xs text-[12px] font-medium transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="End shift and return to staff sign in"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Sign Out</span>
-          </button>
+          {user && (user.isStaff || user.permissions?.isStaff) ? (
+            <>
+              <div className="text-right hidden sm:block">
+                <div className="text-[13px] font-medium text-[#302B28]">
+                  {user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "Staff Member"}
+                </div>
+                <div className="text-[11px] text-[#713A48] font-medium">
+                  {departmentName}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  router.push("/staff");
+                }}
+                className="px-3.5 py-1.5 bg-[#713A48] hover:bg-[#582D38] text-[#FFFDFA] rounded-xs text-[12px] font-medium transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                title="End shift and return to staff sign in"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sign Out</span>
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/"
+              className="text-[12px] text-[#713A48] hover:text-[#302B28] font-medium transition-colors"
+            >
+              ← Consumer Storefront
+            </Link>
+          )}
         </div>
       </div>
     </header>

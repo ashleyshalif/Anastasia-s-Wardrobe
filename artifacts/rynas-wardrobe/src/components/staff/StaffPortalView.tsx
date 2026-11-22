@@ -25,6 +25,7 @@ import {
   X,
   Mail,
   Eye,
+  EyeOff,
   SlidersHorizontal,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -110,7 +111,15 @@ interface StaffCatalogItem {
 }
 
 export function StaffPortalView() {
-  const { user } = useStore();
+  const { user, login, logout } = useStore();
+
+  // Staff Login Form State (when not signed in as staff)
+  const [staffLoginIdentifier, setStaffLoginIdentifier] = useState("");
+  const [staffLoginPassword, setStaffLoginPassword] = useState("");
+  const [staffShowPassword, setStaffShowPassword] = useState(false);
+  const [staffLoginLoading, setStaffLoginLoading] = useState(false);
+  const [staffLoginError, setStaffLoginError] = useState<string | null>(null);
+  const [staffLoginSuccess, setStaffLoginSuccess] = useState<string | null>(null);
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState<"orders" | "inquiries" | "catalog">("orders");
@@ -192,23 +201,65 @@ export function StaffPortalView() {
     }
   }, [isStaff, staffEmail]);
 
+  // Handle Staff Credential Authentication
+  const handleStaffLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStaffLoginError(null);
+    setStaffLoginSuccess(null);
+
+    const lookup = staffLoginIdentifier.trim();
+    if (!lookup || !staffLoginPassword) {
+      setStaffLoginError("Please enter your staff username or email and password.");
+      return;
+    }
+
+    setStaffLoginLoading(true);
+    try {
+      const res = await fetch(apiUrl("/auth/login/"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: lookup, password: staffLoginPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid credentials. Please verify your staff username/email and password.");
+      }
+
+      const isStaffUser = !!(data.user?.isStaff || data.user?.permissions?.isStaff || data.user?.isSuperuser);
+      if (!isStaffUser) {
+        setStaffLoginError(`Access denied: The account '${lookup}' is a patron/customer account and does not have staff permissions.`);
+        return;
+      }
+
+      login(data.user, undefined, undefined, data.token);
+      setStaffLoginSuccess(`Authenticated successfully as ${data.user.firstName} (${data.user.tier || "Staff"}).`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Authentication failed.";
+      setStaffLoginError(msg);
+    } finally {
+      setStaffLoginLoading(false);
+    }
+  };
+
   // Load Orders
   const fetchOrders = useCallback(async () => {
     if (!canManageOrders) return;
     setLoadingOrders(true);
     try {
-      const url = new URL(apiUrl("/staff/orders/"));
-      url.searchParams.set("email", staffEmail);
+      const params = new URLSearchParams();
+      params.set("email", staffEmail);
       if (orderStatusFilter !== "all") {
-        url.searchParams.set("status", orderStatusFilter);
+        params.set("status", orderStatusFilter);
       }
       if (orderSearchQuery.trim()) {
-        url.searchParams.set("q", orderSearchQuery.trim());
+        params.set("q", orderSearchQuery.trim());
       }
-      const res = await fetch(url.toString(), { headers: getAuthHeaders() });
+      const endpoint = `${apiUrl("/staff/orders/")}?${params.toString()}`;
+      const res = await fetch(endpoint, { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
-        setOrders(data);
+        const list = Array.isArray(data) ? data : (data.results || []);
+        setOrders(list);
       }
     } catch (e) {
       console.error("Failed to load staff orders", e);
@@ -242,15 +293,22 @@ export function StaffPortalView() {
     if (!canManageInquiries) return;
     setLoadingInquiries(true);
     try {
-      const url = new URL(apiUrl("/staff/inquiries/"));
-      url.searchParams.set("email", staffEmail);
+      const params = new URLSearchParams();
+      params.set("email", staffEmail);
       if (inquiryFilter !== "all") {
-        url.searchParams.set("status", inquiryFilter);
+        params.set("status", inquiryFilter);
       }
-      const res = await fetch(url.toString(), { headers: getAuthHeaders() });
+      const endpoint = `${apiUrl("/staff/inquiries/")}?${params.toString()}`;
+      const res = await fetch(endpoint, { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
-        setInquiries(data);
+        const list = Array.isArray(data) ? data : (data.results || []);
+        setInquiries(list);
+        if (list.length > 0 && !selectedInquiry) {
+          setSelectedInquiry(list[0]);
+        }
+      } else {
+        console.error("Staff inquiries fetch failed with status", res.status);
       }
     } catch (e) {
       console.error("Failed to load staff inquiries", e);
@@ -419,35 +477,180 @@ export function StaffPortalView() {
     }
   };
 
-  // Non-staff guard
+  // Non-staff guard — render dedicated Staff Credential Authentication View
   if (!isStaff) {
     return (
-      <div className="min-h-[70vh] bg-[#FAF8F5] flex items-center justify-center px-4 py-16">
-        <div className="max-w-[520px] w-full bg-[#FFFDFA] border border-[#D8CFC6] p-8 text-center shadow-sm">
-          <div className="w-14 h-14 mx-auto mb-4 bg-[#F8F5EF] border border-[#D8CFC6] flex items-center justify-center text-[#713A48]">
-            <Lock className="w-6 h-6" />
+      <div className="min-h-[85vh] bg-[#FAF8F5] flex items-center justify-center px-4 py-12">
+        <div className="max-w-[480px] w-full bg-[#FFFDFA] border border-[#D8CFC6] p-6 sm:p-8 shadow-sm">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="w-12 h-12 mx-auto mb-3 bg-[#F8F5EF] border border-[#D8CFC6] flex items-center justify-center text-[#713A48]">
+              <Lock className="w-6 h-6" />
+            </div>
+            <span className="text-[11px] font-semibold text-[#713A48] tracking-widest uppercase block mb-1">
+              Restricted Operations Console
+            </span>
+            <h1 className="font-editorial text-[26px] sm:text-[30px] text-[#302B28] mb-2 leading-tight">
+              Staff Authentication
+            </h1>
+            <p className="text-[13px] text-[#69615B] leading-relaxed">
+              Enter your Atelier staff credentials to access the Internal Management Portal, Order Fulfillment, and Concierge inquiries.
+            </p>
           </div>
-          <span className="text-[11px] font-semibold text-[#713A48] tracking-widest uppercase block mb-1">
-            Restricted Atelier Zone
-          </span>
-          <h1 className="font-editorial text-[28px] text-[#302B28] mb-3">
-            Staff Access Required
-          </h1>
-          <p className="text-[14px] text-[#69615B] leading-relaxed mb-6">
-            The Staff Management Console is reserved for verified team members with assigned permissions in Order Fulfillment, Customer Concierge, or Inventory.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/account"
-              className="px-6 py-3 bg-[#713A48] text-[#FFFDFA] text-[13px] font-medium tracking-wide hover:bg-[#582D38] transition-colors"
+
+          {/* Customer Warning if logged in as patron */}
+          {user && !user.isStaff && (
+            <div className="mb-5 p-3.5 bg-[#FAF3EC] border border-[#C29D72]/40 text-[12px] text-[#713A48] flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#713A48]" />
+              <div className="flex-1">
+                <span>
+                  Currently signed in as patron <strong>{user.firstName} {user.lastName}</strong> ({user.email}).
+                  Please authenticate below with a staff account.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  className="block mt-1 font-medium underline hover:text-[#302B28] cursor-pointer"
+                >
+                  Sign out of patron account
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Feedback Alerts */}
+          {staffLoginError && (
+            <div className="mb-4 p-3 bg-[#FDF0EE] border border-[#E07A5F]/40 text-[#A63A2B] text-[12px] flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <span>{staffLoginError}</span>
+            </div>
+          )}
+          {staffLoginSuccess && (
+            <div className="mb-4 p-3 bg-[#EEF6F0] border border-[#528C63]/40 text-[#2B6E3E] text-[12px] flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              <span>{staffLoginSuccess}</span>
+            </div>
+          )}
+
+          {/* Credential Form */}
+          <form onSubmit={handleStaffLogin} className="space-y-4">
+            <div>
+              <label className="block text-[11px] uppercase tracking-wider text-[#302B28] font-semibold mb-1">
+                Staff Email or Username
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={staffLoginIdentifier}
+                  onChange={(e) => setStaffLoginIdentifier(e.target.value)}
+                  placeholder="e.g. USER, staff_orders, or orders@rynaswardrobe.com"
+                  required
+                  className="w-full h-11 px-3.5 bg-[#FAF8F5] border border-[#D8CFC6] text-[13px] text-[#302B28] focus:border-[#713A48] focus:outline-hidden transition-colors"
+                />
+                <User className="w-4 h-4 text-[#A89F91] absolute right-3.5 top-3.5 pointer-events-none" />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] uppercase tracking-wider text-[#302B28] font-semibold mb-1">
+                Staff Password
+              </label>
+              <div className="relative">
+                <input
+                  type={staffShowPassword ? "text" : "password"}
+                  value={staffLoginPassword}
+                  onChange={(e) => setStaffLoginPassword(e.target.value)}
+                  placeholder="Enter staff password"
+                  required
+                  className="w-full h-11 px-3.5 pr-10 bg-[#FAF8F5] border border-[#D8CFC6] text-[13px] text-[#302B28] focus:border-[#713A48] focus:outline-hidden transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setStaffShowPassword(!staffShowPassword)}
+                  className="absolute right-3 top-3 text-[#A89F91] hover:text-[#302B28] transition-colors"
+                  tabIndex={-1}
+                >
+                  {staffShowPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={staffLoginLoading}
+              className="w-full h-11 bg-[#713A48] hover:bg-[#582D38] text-[#FFFDFA] text-[13px] font-medium tracking-wide transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 shadow-xs"
             >
-              Sign In with Staff Account
-            </Link>
+              {staffLoginLoading ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Verifying Credentials...</span>
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Sign In to Atelier Operations</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Quick Credential Pre-fill Helpers for Evaluators / Developers */}
+          <div className="mt-6 pt-5 border-t border-[#EAE3D9]">
+            <span className="text-[11px] font-medium text-[#69615B] uppercase tracking-wider block mb-2.5">
+              Available Staff Test Accounts (Click to Fill):
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-left">
+              <button
+                type="button"
+                onClick={() => {
+                  setStaffLoginIdentifier("USER");
+                  setStaffLoginPassword("Maya@123");
+                  setStaffLoginError(null);
+                }}
+                className="p-2.5 bg-[#FAF8F5] border border-[#D8CFC6] hover:border-[#713A48] hover:bg-[#F3EFEA] transition-all text-left cursor-pointer group"
+              >
+                <div className="text-[11px] font-semibold text-[#713A48] group-hover:underline">Executive Admin</div>
+                <div className="text-[10px] text-[#69615B]">USER / Maya@123</div>
+                <div className="text-[9px] text-[#8C827A] mt-0.5">Full Atelier Access</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setStaffLoginIdentifier("staff_orders");
+                  setStaffLoginPassword("Maya@123");
+                  setStaffLoginError(null);
+                }}
+                className="p-2.5 bg-[#FAF8F5] border border-[#D8CFC6] hover:border-[#713A48] hover:bg-[#F3EFEA] transition-all text-left cursor-pointer group"
+              >
+                <div className="text-[11px] font-semibold text-[#713A48] group-hover:underline">Orders Staff</div>
+                <div className="text-[10px] text-[#69615B]">staff_orders / Maya@123</div>
+                <div className="text-[9px] text-[#8C827A] mt-0.5">Fulfillment & Returns</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setStaffLoginIdentifier("staff_concierge");
+                  setStaffLoginPassword("Maya@123");
+                  setStaffLoginError(null);
+                }}
+                className="p-2.5 bg-[#FAF8F5] border border-[#D8CFC6] hover:border-[#713A48] hover:bg-[#F3EFEA] transition-all text-left cursor-pointer group"
+              >
+                <div className="text-[11px] font-semibold text-[#713A48] group-hover:underline">Concierge Staff</div>
+                <div className="text-[10px] text-[#69615B]">staff_concierge / Maya@123</div>
+                <div className="text-[9px] text-[#8C827A] mt-0.5">Inquiries & Replies</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Return link */}
+          <div className="mt-5 text-center">
             <Link
               href="/"
-              className="px-6 py-3 bg-transparent border border-[#D8CFC6] text-[#302B28] text-[13px] font-medium tracking-wide hover:bg-[#F8F5EF] transition-colors"
+              className="text-[12px] text-[#713A48] hover:text-[#302B28] hover:underline"
             >
-              Return to Storefront
+              ← Return to Consumer Storefront
             </Link>
           </div>
         </div>

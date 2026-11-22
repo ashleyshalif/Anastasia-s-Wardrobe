@@ -84,5 +84,6 @@ mobile/*.iml
 # Local Binaries and Scratch
 *.exe
 killer.txt
+_archive_quarantine/
 __pycache__/
 *.pyc

@@ -2,9 +2,9 @@ const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://api.razorpay.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  img-src 'self' blob: data: https: http://127.0.0.1:8000;
+  img-src 'self' blob: data: https: http://127.0.0.1:8000 http://localhost:8000;
   font-src 'self' https://fonts.gstatic.com data:;
-  connect-src 'self' http://127.0.0.1:8000 https://api.razorpay.com https://lumberjack.razorpay.com;
+  connect-src 'self' http://127.0.0.1:8000 http://localhost:8000 https://api.razorpay.com https://lumberjack.razorpay.com;
   frame-src 'self' https://api.razorpay.com;
   object-src 'none';
   base-uri 'self';

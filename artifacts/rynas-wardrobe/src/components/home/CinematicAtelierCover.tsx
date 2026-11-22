@@ -68,7 +68,7 @@ export function CinematicAtelierCover() {
           className="font-editorial text-4xl sm:text-6xl lg:text-7xl text-[#FAF8F5] font-light tracking-wide leading-[1.08] mb-5 text-balance drop-shadow-md"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          Anastasia&apos;s Wardrobe
+          Ryna&apos;s Wardrobe
         </h1>
 
         {/* Couture Subtitle */}

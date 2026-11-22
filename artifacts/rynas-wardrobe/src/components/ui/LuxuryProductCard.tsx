@@ -14,7 +14,7 @@ interface LuxuryProductCardProps {
   featured?: boolean;
 }
 
-export function LuxuryProductCard({ product, featured = false }: LuxuryProductCardProps) {
+function LuxuryProductCardInternal({ product, featured = false }: LuxuryProductCardProps) {
   const router = useRouter();
   const { toggleWishlist, isInWishlist, addToCart } = useStore();
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
@@ -205,3 +205,17 @@ export function LuxuryProductCard({ product, featured = false }: LuxuryProductCa
     </div>
   );
 }
+
+export const LuxuryProductCard = React.memo(
+  LuxuryProductCardInternal,
+  (prevProps, nextProps) => {
+    return (
+      prevProps.featured === nextProps.featured &&
+      prevProps.product.id === nextProps.product.id &&
+      prevProps.product.price === nextProps.product.price &&
+      prevProps.product.inStock === nextProps.product.inStock &&
+      prevProps.product.image === nextProps.product.image &&
+      prevProps.product.name === nextProps.product.name
+    );
+  }
+);

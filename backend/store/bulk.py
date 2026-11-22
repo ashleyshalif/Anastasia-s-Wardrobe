@@ -1,6 +1,6 @@
 """
 store/bulk.py
-Enterprise bulk product import/export engine for Anastasia's Wardrobe.
+Enterprise bulk product import/export engine for Ryna's Wardrobe.
 Supports:
 - Multi-category CSV and Excel (.xlsx) export and import
 - Template downloads (CSV and Excel) with sample rows
@@ -17,7 +17,7 @@ from datetime import datetime
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.cache import cache
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.utils.text import slugify
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -43,6 +43,85 @@ EXPORT_COLUMNS = [
     ("care", "Care Instructions"),
     ("description", "Description"),
 ]
+
+
+class Echo:
+    """An object that implements just the write method of the file-like interface."""
+    def write(self, value):
+        """Write the value by returning it, instead of buffering in memory."""
+        return value
+
+
+def stream_products_csv_generator(queryset):
+    """
+    Algorithmic Optimization: Generator function using `yield` for O(1) memory streaming.
+    Eliminates in-memory buffering of large product datasets and minimizes TTFB.
+    """
+    pseudo_buffer = Echo()
+    writer = csv.writer(pseudo_buffer)
+
+    # Header
+    yield writer.writerow([col[0] for col in EXPORT_COLUMNS])
+
+    # Stream in chunks of 500 using iterator() to prevent memory spikes
+    for prod in queryset.iterator(chunk_size=500):
+        sizes_str = ", ".join(prod.sizes) if isinstance(prod.sizes, list) else str(prod.sizes or "")
+        yield writer.writerow([
+            prod.slug,
+            prod.name,
+            prod.category.slug if prod.category else "",
+            prod.department,
+            prod.price,
+            prod.original_price or "",
+            prod.sale_note or "",
+            prod.currency,
+            prod.color,
+            prod.color_hex or "",
+            sizes_str,
+            prod.primary_image_url or prod.image or "",
+            prod.badge or "",
+            "TRUE" if prod.in_stock else "FALSE",
+            prod.fabric or "",
+            prod.care or "",
+            prod.description or "",
+        ])
+
+
+def stream_products_json_generator(queryset):
+    """
+    Algorithmic Optimization: Generator function yielding JSON items incrementally.
+    Avoids loading thousands of serialized model dicts into memory simultaneously.
+    """
+    import json
+    yield "[\n"
+    first = True
+    for prod in queryset.iterator(chunk_size=500):
+        if not first:
+            yield ",\n"
+        first = False
+        data = {
+            "slug": prod.slug,
+            "name": prod.name,
+            "category": prod.category.slug if prod.category else None,
+            "department": prod.department,
+            "price": prod.price,
+            "in_stock": prod.in_stock,
+            "color": prod.color,
+            "sizes": prod.sizes,
+        }
+        yield "  " + json.dumps(data)
+    yield "\n]\n"
+
+
+def export_products_csv_stream(queryset):
+    """Memory-efficient streaming CSV export via StreamingHttpResponse."""
+    response = StreamingHttpResponse(
+        stream_products_csv_generator(queryset),
+        content_type="text/csv; charset=utf-8"
+    )
+    filename = f"rynas_wardrobe_products_stream_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
 
 
 def export_products_csv(queryset):

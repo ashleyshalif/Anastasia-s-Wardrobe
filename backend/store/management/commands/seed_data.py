@@ -2,7 +2,7 @@
 store/management/commands/seed_data.py
 
 A management command that populates the database with the categories
-and products from Anastasia's Wardrobe catalog.
+and products from Ryna's Wardrobe catalog.
 
 Run with:
     python manage.py seed_data
@@ -34,7 +34,7 @@ CATEGORIES = [
 
 
 class Command(BaseCommand):
-    help = "Seeds the database with Anastasia's Wardrobe categories and full products catalog."
+    help = "Seeds the database with Ryna's Wardrobe categories and full products catalog."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -172,6 +172,82 @@ class Command(BaseCommand):
 
             status = "Created" if created else "Updated"
             self.stdout.write(f"  {status}: {product.name} ({product.images.count()} photos)")
+
+        # ── 3. Seed Default Admin & Staff Accounts ─────────────────────────────
+        from django.contrib.auth.models import User
+        from store.models import StaffProfile
+
+        # 3a. Master Executive Admin (Full Access)
+        admin_user, _ = User.objects.get_or_create(
+            username="USER",
+            defaults={
+                "email": "staff@rynaswardrobe.com",
+                "first_name": "Maya",
+                "last_name": "Kapoor",
+                "is_staff": True,
+                "is_superuser": True,
+            }
+        )
+        admin_user.is_staff = True
+        admin_user.is_superuser = True
+        admin_user.set_password("Maya@123")
+        admin_user.save()
+        sp_admin, _ = StaffProfile.objects.get_or_create(user=admin_user, defaults={"department": "Executive Administration"})
+        sp_admin.can_manage_orders = True
+        sp_admin.can_manage_inquiries = True
+        sp_admin.can_manage_catalog = True
+        sp_admin.save()
+        self.stdout.write(self.style.SUCCESS("  [AUTH] Configured Executive Admin: USER / Maya@123"))
+
+        # 3b. Orders & Fulfillment Staff (Orders & Returns Queue)
+        staff_orders_user, _ = User.objects.get_or_create(
+            username="staff_orders",
+            defaults={
+                "email": "orders@rynaswardrobe.com",
+                "first_name": "Rohan",
+                "last_name": "Mehta",
+                "is_staff": True,
+            }
+        )
+        staff_orders_user.is_staff = True
+        staff_orders_user.set_password("Maya@123")
+        staff_orders_user.save()
+        sp_orders, _ = StaffProfile.objects.get_or_create(user=staff_orders_user, defaults={"department": "Order Fulfillment & Logistics"})
+        sp_orders.can_manage_orders = True
+        sp_orders.save()
+        self.stdout.write(self.style.SUCCESS("  [AUTH] Configured Orders Staff: staff_orders / Maya@123"))
+
+        # 3c. Customer Concierge Staff (Inquiries & Styling)
+        staff_concierge_user, _ = User.objects.get_or_create(
+            username="staff_concierge",
+            defaults={
+                "email": "concierge@rynaswardrobe.com",
+                "first_name": "Ananya",
+                "last_name": "Sharma",
+                "is_staff": True,
+            }
+        )
+        staff_concierge_user.is_staff = True
+        staff_concierge_user.set_password("Maya@123")
+        staff_concierge_user.save()
+        sp_concierge, _ = StaffProfile.objects.get_or_create(user=staff_concierge_user, defaults={"department": "Customer Concierge & Styling"})
+        sp_concierge.can_manage_inquiries = True
+        sp_concierge.save()
+        self.stdout.write(self.style.SUCCESS("  [AUTH] Configured Concierge Staff: staff_concierge / Maya@123"))
+
+        # 3d. Default Patron Customer
+        patron_user, _ = User.objects.get_or_create(
+            username="maya",
+            defaults={
+                "email": "maya.kapoor@example.com",
+                "first_name": "Maya",
+                "last_name": "Kapoor",
+                "is_staff": False,
+            }
+        )
+        patron_user.set_password("Maya@123")
+        patron_user.save()
+        self.stdout.write(self.style.SUCCESS("  [AUTH] Configured Patron User: maya.kapoor@example.com / Maya@123"))
 
         cache.clear()
         self.stdout.write(self.style.SUCCESS("\nDatabase seeded successfully!"))

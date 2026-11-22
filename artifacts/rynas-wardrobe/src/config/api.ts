@@ -26,6 +26,9 @@ export const API_BASE_URL = `${API_HOST}/api`;
  */
 export function apiUrl(path: string): string {
   const cleanPath = path.replace(/^\/?(api\/)?/, "").replace(/^\/+/, "");
+  if (typeof window !== "undefined") {
+    return `/api/${cleanPath}`;
+  }
   return `${API_BASE_URL}/${cleanPath}`;
 }
 

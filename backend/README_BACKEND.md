@@ -1,6 +1,6 @@
-# Anastasia's Wardrobe — Backend Documentation & Operations Guide
+# Ryna's Wardrobe — Backend Documentation & Operations Guide
 
-Welcome to the backend architecture documentation for **Anastasia's Wardrobe** ("Anastasia's Wardrobe — Store").
+Welcome to the backend architecture documentation for **Ryna's Wardrobe** ("Ryna's Wardrobe — Store").
 
 This service powers the storefront catalog, customer checkout, order tracking, real-time photo variant switching, contact inquiries, and merchant inventory operations.
 
@@ -13,7 +13,7 @@ This service powers the storefront catalog, customer checkout, order tracking, r
 - **Caching Layer:** Django LocMemCache with automatic signal-based invalidation
 - **Media & Photos:** Multi-angle image storage (`media/products/`) with Next.js rewrite proxy
 - **Frontend Integration:** Next.js 16.4.2 (App Router + Turbopack + Tailwind CSS v4)
-- **Admin Panel:** Atelier theme at `http://127.0.0.1:8000/admin` (Title: *"Anastasia's Wardrobe — Store"*)
+- **Admin Panel:** Atelier theme at `http://127.0.0.1:8000/admin` (Title: *"Ryna's Wardrobe — Store"*)
 
 ```
 ┌─────────────────────────┐          ┌───────────────────────────────────┐

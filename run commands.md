@@ -1,5 +1,5 @@
 # ==============================================================================
-# Ryna's Wardrobe (Anastasia's Atelier) — Command Quick Reference
+# Ryna's Wardrobe — Command Quick Reference
 # ==============================================================================
 
 > [!IMPORTANT]
@@ -10,12 +10,23 @@
 
 ---
 
-## ⚡ 1. SINGLE-RUN COMMAND (COPY & PASTE EVERYTHING AT ONCE)
-Works from **ANY terminal folder** (whether you are currently in `backend`, `artifacts\rynas-wardrobe`, or the root directory). 
-It clears ports, starts Django in one window, starts Next.js in another window, and opens your browser automatically:
+## ⚡ 1. UNIVERSAL CROSS-PLATFORM LAUNCH COMMAND (RUN FROM ANY TERMINAL)
+Works seamlessly on **Windows, macOS, and Linux**:
 
+```bash
+# Universal Python runner (frees ports, starts both servers, opens browser):
+python start.py
+```
+Or via npm / pnpm:
+```bash
+npm run dev
+# or
+pnpm run dev
+```
+
+### Windows PowerShell One-Liner (if you prefer PowerShell without python start.py)
 ```powershell
-$P = (Get-Location).Path; if (Test-Path "$P\manage.py") { $R = Split-Path $P -Parent } elseif (Test-Path "$P\backend\manage.py") { $R = $P } elseif (Test-Path "$P\..\backend\manage.py") { $R = (Get-Item "$P\..").FullName } else { $R = "C:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe" }; Get-NetTCPConnection -LocalPort 3000, 8000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$R\backend'; Write-Host '--- DJANGO BACKEND (PORT 8000) ---' -ForegroundColor Yellow; Write-Host 'Admin Portal: http://127.0.0.1:8000/admin/' -ForegroundColor Yellow; & '.\venv\Scripts\python.exe' manage.py runserver 127.0.0.1:8000"; Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$R\artifacts\rynas-wardrobe'; Write-Host '--- NEXT.JS FRONTEND (PORT 3000) ---' -ForegroundColor Green; Write-Host 'Storefront: http://localhost:3000' -ForegroundColor Green; npm run dev"; Start-Sleep -Seconds 3; Start-Process "http://localhost:3000"
+$R = if (Test-Path "$PSScriptRoot\backend") { $PSScriptRoot } elseif (Test-Path ".\backend") { (Get-Location).Path } else { Split-Path -Parent (Get-Location).Path }; Get-NetTCPConnection -LocalPort 3000, 8000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Start-Process powershell -WorkingDirectory "$R\backend" -ArgumentList "-NoExit", "-Command", "Write-Host '--- DJANGO BACKEND (PORT 8000) ---' -ForegroundColor Yellow; & '.\venv\Scripts\python.exe' manage.py runserver 127.0.0.1:8000"; Start-Process powershell -WorkingDirectory "$R\artifacts\rynas-wardrobe" -ArgumentList "-NoExit", "-Command", "Write-Host '--- NEXT.JS FRONTEND (PORT 3000) ---' -ForegroundColor Green; pnpm run dev"; Start-Sleep -Seconds 3; Start-Process "http://localhost:3000"
 ```
 
 ---
@@ -31,13 +42,13 @@ $P = (Get-Location).Path; if (Test-Path "$P\manage.py") { $R = Split-Path $P -Pa
 ### Frontend Only (Port 3000)
 Run this block to start Next.js from anywhere:
 ```powershell
-$P = (Get-Location).Path; if (Test-Path "$P\manage.py") { $R = Split-Path $P -Parent } elseif (Test-Path "$P\backend\manage.py") { $R = $P } else { $R = "C:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe" }; Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Set-Location "$R\artifacts\rynas-wardrobe"; npm run dev
+if (Test-Path ".\artifacts\rynas-wardrobe\package.json") { $R = (Get-Location).Path } elseif (Test-Path "..\artifacts\rynas-wardrobe\package.json") { $R = (Get-Item "..").FullName } elseif (Test-Path "C:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe\artifacts\rynas-wardrobe\package.json") { $R = "C:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe" } else { $R = (Get-Location).Path }; Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Set-Location "$R\artifacts\rynas-wardrobe"; pnpm run dev
 ```
 
 ### Backend Only (Port 8000)
 Run this block to start Django from anywhere:
 ```powershell
-$P = (Get-Location).Path; if (Test-Path "$P\manage.py") { $R = Split-Path $P -Parent } elseif (Test-Path "$P\backend\manage.py") { $R = $P } else { $R = "C:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe" }; Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Set-Location "$R\backend"; & ".\venv\Scripts\python.exe" manage.py runserver 127.0.0.1:8000
+if (Test-Path ".\artifacts\rynas-wardrobe\package.json") { $R = (Get-Location).Path } elseif (Test-Path "..\artifacts\rynas-wardrobe\package.json") { $R = (Get-Item "..").FullName } elseif (Test-Path "C:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe\artifacts\rynas-wardrobe\package.json") { $R = "C:\Users\USER\OneDrive\Desktop\Anastasia's Wardrobe" } else { $R = (Get-Location).Path }; Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Set-Location "$R\backend"; & ".\venv\Scripts\python.exe" manage.py runserver 127.0.0.1:8000
 ```
 
 ---
